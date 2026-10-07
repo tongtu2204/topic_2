@@ -1,0 +1,15 @@
+Criterion,Value
+Selected State Space specification,Local Level
+Test MAE,18.56782050482203
+Test RMSE,30.05451198062788
+Test MAPE (%),0.0709182114021713
+Test sMAPE (%),0.07092644187776856
+Test MASE,1.0165604978708511
+Directional Accuracy (%),40.0
+Relative RMSE vs Naive,1.0000368388975562
+95% PI Coverage (%),94.85714285714286
+Average 95% PI Width,141.56983298264782
+Ljung-Box p-value lag 20,2.473522381472059e-19
+Jarque-Bera p-value,0.0
+ARCH-LM p-value,4.013492126891554e-53
+Optimizer converged,True

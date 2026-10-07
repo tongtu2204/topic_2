@@ -1,0 +1,4 @@
+Split,N,Start,End,Missing_Close,Missing_LogPrice,Duplicate_Date,Nonpositive_Close
+Train,2347,2016-01-04,2024-12-31,0,0,0,0
+Validation,262,2025-01-01,2025-12-31,0,0,0,0
+Test,175,2026-01-01,2026-08-31,0,0,0,0
