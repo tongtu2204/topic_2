@@ -10,6 +10,7 @@ import json
 import numpy as np
 import pandas as pd
 from statsmodels.stats.diagnostic import acorr_ljungbox, het_arch
+from statsmodels.stats.stattools import jarque_bera
 
 
 @dataclass
@@ -135,6 +136,51 @@ def metrics(actual, predicted):
             "Direction_accuracy": float(np.mean(np.sign(actual)==np.sign(predicted)))}
 
 
+def common_metrics(actual, predicted, mase_scale, naive_rmse, previous=None,
+                   percentage_metrics=False):
+    """Metrics shared across models on one target scale.
+
+    MASE uses the mean absolute one-step naive error from the estimation
+    sample. Relative RMSE uses the RMSE of the same-split naive forecast.
+    For prices, ``previous`` supplies the last observed price for direction.
+    """
+    actual = np.asarray(actual, dtype=float)
+    predicted = np.asarray(predicted, dtype=float)
+    if mase_scale <= 0 or naive_rmse <= 0:
+        raise ValueError("MASE scale and naive RMSE must be positive.")
+    result = metrics(actual, predicted)
+    result["MASE"] = result["MAE"] / mase_scale
+    result["Relative_RMSE_vs_Naive"] = result["RMSE"] / naive_rmse
+    if previous is not None:
+        previous = np.asarray(previous, dtype=float)
+        result["Direction_accuracy"] = float(np.mean(
+            np.sign(actual-previous) == np.sign(predicted-previous)))
+    if percentage_metrics:
+        if np.any(actual == 0):
+            raise ValueError("MAPE is undefined when actual contains zero.")
+        result["MAPE_percent"] = float(100*np.mean(np.abs((actual-predicted)/actual)))
+        denominator = np.abs(actual)+np.abs(predicted)
+        result["sMAPE_percent"] = float(100*np.mean(
+            np.divide(2*np.abs(actual-predicted), denominator,
+                      out=np.zeros_like(actual), where=denominator != 0)))
+    return result
+
+
+def setar_residual_quantiles(model, values, probability=0.95):
+    """Empirical innovation quantiles per fitted SETAR regime."""
+    values = np.asarray(values, dtype=float)
+    fitted, regimes, _ = forecast_one_step(model, values[:model.start], values[model.start:])
+    residual = values[model.start:] - fitted
+    alpha = (1-probability)/2
+    quantiles = {}
+    for regime in ("Low", "High"):
+        sample = residual[regimes == regime]
+        if len(sample) < 30:
+            raise ValueError("Too few residuals for regime interval.")
+        quantiles[regime] = tuple(np.quantile(sample, [alpha, 1-alpha]))
+    return quantiles
+
+
 def load_splits(base):
     splits = {}
     for name in ("train", "validation", "test"):
@@ -193,7 +239,7 @@ def evaluate(splits, selected):
     ar0, setar0 = selected["AR"], selected["SETAR"]
     ar = fit_ar(train_val, ar0.p, ar0.start)
     setar, refit_profile = profile_threshold(train_val, setar0.p, setar0.d, setar0.start)
-    all_metrics, predictions = [], []
+    all_metrics, price_metrics, interval_metrics, predictions = [], [], [], []
     for name, history, actual, models in (
             ("validation", train, val, selected),
             ("test", train_val, test, {"AR": ar, "SETAR": setar})):
@@ -210,10 +256,6 @@ def evaluate(splits, selected):
                     frame["threshold_variable"] = z
                     frame["SETAR_regime"] = regimes
             frame[kind] = predicted
-            scores = metrics(actual, predicted)
-            if kind == "Zero":
-                scores["Direction_accuracy"] = np.nan
-            all_metrics.append({"Split": name, "Model": kind, "n": len(actual), **scores})
         # Back-transform to a price point forecast using the observed prior close.
         # This is NOT the conditional mean of price (no Jensen correction).
         previous_close = np.r_[splits["train" if name=="validation" else "validation"].Close.iloc[-1],
@@ -221,8 +263,49 @@ def evaluate(splits, selected):
         frame["previous_close"] = previous_close
         for kind in ("Zero", "Mean", "AR", "SETAR"):
             frame[f"{kind}_price_point"] = previous_close*np.exp(frame[kind]/100)
+
+        history_close = splits["train"].Close.to_numpy() if name == "validation" else np.concatenate([
+            splits["train"].Close.to_numpy(), splits["validation"].Close.to_numpy()])
+        return_mase_scale = float(np.mean(np.abs(np.diff(history))))
+        price_mase_scale = float(np.mean(np.abs(np.diff(history_close))))
+        naive_return_rmse = metrics(actual, frame["Zero"])["RMSE"]
+        naive_price_rmse = metrics(frame.actual_close, frame.Zero_price_point)["RMSE"]
+        for kind in ("Zero", "Mean", "AR", "SETAR"):
+            return_scores = common_metrics(actual, frame[kind], return_mase_scale,
+                                           naive_return_rmse)
+            price_scores = common_metrics(frame.actual_close, frame[f"{kind}_price_point"],
+                                          price_mase_scale, naive_price_rmse,
+                                          previous=previous_close, percentage_metrics=True)
+            if kind == "Zero":
+                return_scores["Direction_accuracy"] = np.nan
+                price_scores["Direction_accuracy"] = np.nan
+            all_metrics.append({"Split": name, "Model": kind, "n": len(actual), **return_scores})
+            price_metrics.append({"Split": name, "Model": kind, "n": len(actual), **price_scores})
+
+        # Approximate 95% one-step intervals from empirical in-sample residual
+        # quantiles within each SETAR regime. These intervals use estimation
+        # data only and include innovation uncertainty, not parameter uncertainty.
+        interval_model = models["SETAR"]
+        quantiles = setar_residual_quantiles(interval_model, history)
+        q_low = np.array([quantiles[r][0] for r in frame.SETAR_regime])
+        q_high = np.array([quantiles[r][1] for r in frame.SETAR_regime])
+        frame["SETAR_return_pi_lower"] = frame.SETAR + q_low
+        frame["SETAR_return_pi_upper"] = frame.SETAR + q_high
+        frame["SETAR_price_pi_lower"] = previous_close*np.exp(frame.SETAR_return_pi_lower/100)
+        frame["SETAR_price_pi_upper"] = previous_close*np.exp(frame.SETAR_return_pi_upper/100)
+        for scale, actual_col, lower_col, upper_col in (
+                ("return_percent", "actual_return", "SETAR_return_pi_lower", "SETAR_return_pi_upper"),
+                ("price_USD_per_ounce", "actual_close", "SETAR_price_pi_lower", "SETAR_price_pi_upper")):
+            covered = ((frame[actual_col] >= frame[lower_col]) &
+                       (frame[actual_col] <= frame[upper_col]))
+            interval_metrics.append({"Split": name, "Model": "SETAR", "Scale": scale,
+                                     "Nominal_coverage_percent": 95.0,
+                                     "PI_coverage_percent": float(100*covered.mean()),
+                                     "Average_PI_width": float((frame[upper_col]-frame[lower_col]).mean())})
         predictions.append(frame.assign(Split=name))
     return {"metrics": pd.DataFrame(all_metrics),
+            "price_metrics": pd.DataFrame(price_metrics),
+            "interval_metrics": pd.DataFrame(interval_metrics),
             "predictions": pd.concat(predictions, ignore_index=True),
             "AR": ar, "SETAR": setar, "refit_profile": refit_profile,
             "train_val": train_val}
@@ -260,6 +343,10 @@ def residual_diagnostics(evaluation):
         lm, pvalue, _, _ = het_arch(residual, nlags=10, ddof=ncoeff)
         rows.append({"Model": kind, "Test": "ARCH-LM residual", "Lag": 10,
                      "Statistic": lm, "p_value": pvalue})
+        jb, jb_pvalue, skew, kurtosis = jarque_bera(residual)
+        rows.append({"Model": kind, "Test": "Jarque-Bera residual", "Lag": np.nan,
+                     "Statistic": jb, "p_value": jb_pvalue,
+                     "Skewness": skew, "Kurtosis": kurtosis})
         residual_frames.append(pd.DataFrame({"Model": kind, "position": np.arange(model.start, len(y)),
                                             "residual": residual}))
     return pd.DataFrame(rows), pd.concat(residual_frames, ignore_index=True)
@@ -272,6 +359,8 @@ def save_tables(base, splits, selected, grid, profiles, evaluation):
     tables = {"validation_grid.csv": grid, "threshold_search_train.csv": profiles,
               "threshold_search_refit.csv": evaluation["refit_profile"],
               "forecast_metrics.csv": evaluation["metrics"],
+              "price_forecast_metrics.csv": evaluation["price_metrics"],
+              "setar_interval_metrics.csv": evaluation["interval_metrics"],
               "forecasts.csv": evaluation["predictions"],
               "coefficients.csv": coefficient_table(selected, evaluation),
               "residual_diagnostics.csv": diagnostics, "residuals.csv": residuals}

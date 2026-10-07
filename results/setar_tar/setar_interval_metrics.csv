@@ -1,0 +1,5 @@
+Split,Model,Scale,Nominal_coverage_percent,PI_coverage_percent,Average_PI_width
+validation,SETAR,return_percent,95.0,93.4108527131783,7.2508745813725755
+validation,SETAR,price_USD_per_ounce,95.0,93.4108527131783,2.9081136557954896
+test,SETAR,return_percent,95.0,70.93023255813954,7.328309937916653
+test,SETAR,price_USD_per_ounce,95.0,70.93023255813954,5.44682361600582

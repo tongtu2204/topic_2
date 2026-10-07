@@ -126,12 +126,43 @@ def make_figures(base, splits, selected, grid, profiles, evaluation, tables):
     plot_acf(residual**2, lags=40, ax=axes[1,1], zero=False)
     axes[1,1].set_title("ACF of squared residuals (descriptive)")
     save(fig, "07_residual_diagnostics.png")
+
+    price_scores = evaluation["price_metrics"]
+    fig, axes = plt.subplots(2, 2, figsize=(11, 8))
+    for ax, metric, label in zip(axes.flat,
+            ("RMSE", "MAE", "MAPE_percent", "sMAPE_percent"),
+            ("RMSE (USD/oz)", "MAE (USD/oz)", "MAPE (%)", "sMAPE (%)")):
+        subset = price_scores[price_scores.Split=="test"].set_index("Model").loc[kinds]
+        bars = ax.bar(kinds, subset[metric], color=[COLORS[k] for k in kinds], width=.65)
+        ax.bar_label(bars, fmt="%.4f", padding=3, fontsize=9)
+        ax.set(title=f"Test - {label}", ylabel=label)
+        ax.set_ylim(0, subset[metric].max()*1.18)
+        ax.grid(axis="y", alpha=.2)
+        ax.set_axisbelow(True)
+    fig.suptitle("Common price-scale metrics for cross-model comparison", fontweight="bold")
+    save(fig, "08_common_price_metrics.png")
+
+    fig, ax = plt.subplots(figsize=(12, 5.5))
+    ax.fill_between(test.Date, test.SETAR_price_pi_lower, test.SETAR_price_pi_upper,
+                    color=COLORS["SETAR"], alpha=.18, label="SETAR empirical 95% PI")
+    ax.plot(test.Date, test.actual_close, color="#334155", lw=1.2, label="Actual close")
+    ax.plot(test.Date, test.SETAR_price_point, color=COLORS["SETAR"], lw=1.0,
+            label="SETAR one-step price point")
+    coverage = evaluation["interval_metrics"].query(
+        "Split == 'test' and Scale == 'price_USD_per_ounce'").PI_coverage_percent.iloc[0]
+    ax.set(title=f"SETAR test price forecast and empirical 95% PI (coverage {coverage:.2f}%)",
+           xlabel="Date", ylabel="USD per troy ounce")
+    ax.legend(loc="upper left")
+    ax.grid(alpha=.2)
+    save(fig, "09_test_price_prediction_interval.png")
     return figures
 
 
 def write_results_note(base, config, evaluation, tables):
     output = Path(base)/"results"/"setar_tar"/"README.md"
     scores = evaluation["metrics"]
+    price_scores = evaluation["price_metrics"]
+    interval_scores = evaluation["interval_metrics"]
     selected = config["models"]["train"]["SETAR"]
     final = config["models"]["train_validation"]["SETAR"]
     ar = config["models"]["train_validation"]["AR"]
@@ -151,16 +182,29 @@ def write_results_note(base, config, evaluation, tables):
              "- Sau khi khóa p,d, ước lượng lại ngưỡng và hệ số trên train+validation; giữ cố định tham số trong test.",
              "- Dự báo từng phiên một bước trước. Tại phiên t chỉ dùng dữ liệu đã biết đến t−1; return thực tế của phiên trước được cập nhật vào lag.",
              "- Mean dự báo bằng trung bình tập ước lượng; Zero dự báo return bằng 0. Đây là các đối chứng riêng, không tham gia chọn cấu hình SETAR.",
-             "- RMSE/MAE tính bằng điểm phần trăm. Không dùng MAPE cho return vì return có thể bằng/gần 0.", "",
+             "- Trên return: báo cáo RMSE, MAE, MASE, đúng dấu và Relative RMSE so với Zero. Không dùng MAPE cho return vì return có thể bằng/gần 0.",
+             "- Trên giá: đổi dự báo return thành điểm giá bằng `Close[t-1]*exp(predicted_return/100)`, rồi báo cáo MAE, RMSE, MAPE, sMAPE, MASE, đúng chiều và Relative RMSE so với cùng một Naive (`Close[t-1]`).",
+             "- Khoảng dự báo 95% của SETAR dùng phân vị 2,5% và 97,5% của phần dư trong từng chế độ trên tập ước lượng; không dùng test để đặt độ rộng.", "",
              "## Cấu hình chọn được", "",
              f"- SETAR chọn trên validation: p={selected['p']}, d={selected['d']}, ngưỡng train = {selected['threshold']:.6f}%.",
              f"- Sau refit: ngưỡng = {final['threshold']:.6f}%; số quan sát fit: {final['nobs']:,}; "
              f"Low={final['n_low']:,}, High={final['n_high']:,}.",
              f"- AR đối chứng: p={ar['p']}.", "",
-             "## Kết quả dự báo", "", "| Tập | Mô hình | n | RMSE | MAE | Đúng dấu |", "|---|---|---:|---:|---:|---:|"]
+             "## Kết quả dự báo log-return", "", "| Tập | Mô hình | n | RMSE | MAE | MASE | Relative RMSE | Đúng dấu |", "|---|---|---:|---:|---:|---:|---:|---:|"]
     for row in scores.itertuples():
         direction = "Không áp dụng" if row.Model=="Zero" else f"{100*row.Direction_accuracy:.2f}%"
-        lines.append(f"| {row.Split} | {row.Model} | {row.n} | {row.RMSE:.6f} | {row.MAE:.6f} | {direction} |")
+        lines.append(f"| {row.Split} | {row.Model} | {row.n} | {row.RMSE:.6f} | {row.MAE:.6f} | {row.MASE:.6f} | {row.Relative_RMSE_vs_Naive:.6f} | {direction} |")
+    lines += ["", "## Kết quả trên thang giá dùng để so sánh các thuật toán", "",
+              "| Tập | Mô hình | n | MAE | RMSE | MAPE | sMAPE | MASE | Relative RMSE | Đúng chiều |",
+              "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    for row in price_scores.itertuples():
+        direction = "Không áp dụng" if row.Model=="Zero" else f"{100*row.Direction_accuracy:.2f}%"
+        lines.append(f"| {row.Split} | {row.Model} | {row.n} | {row.MAE:.6f} | {row.RMSE:.6f} | {row.MAPE_percent:.6f}% | {row.sMAPE_percent:.6f}% | {row.MASE:.6f} | {row.Relative_RMSE_vs_Naive:.6f} | {direction} |")
+    lines += ["", "## Khoảng dự báo SETAR", "",
+              "| Tập | Thang đo | Mức danh nghĩa | Bao phủ thực tế | Độ rộng trung bình |",
+              "|---|---|---:|---:|---:|"]
+    for row in interval_scores.itertuples():
+        lines.append(f"| {row.Split} | {row.Scale} | {row.Nominal_coverage_percent:.2f}% | {row.PI_coverage_percent:.2f}% | {row.Average_PI_width:.6f} |")
     lines += ["", "Zero không đưa ra dự báo hướng tăng/giảm, nên Direction_accuracy để trống trong CSV "
               "và không áp dụng trong bảng trên.", "", "## Nhận xét", ""]
     test = scores[scores.Split=="test"].set_index("Model")
@@ -173,13 +217,14 @@ def write_results_note(base, config, evaluation, tables):
               "chứng minh phương trình trung bình có ngưỡng. Phần này chưa thực hiện kiểm định tuyến tính "
               "đối lập SETAR với phân phối null/ bootstrap phù hợp cho ngưỡng chưa xác định dưới H0.", "",
               "## Chẩn đoán và giới hạn", "",
-              "`residual_diagnostics.csv` chứa Ljung–Box cho phần dư, bình phương phần dư và ARCH-LM trên train+validation. "
+              "`residual_diagnostics.csv` chứa Ljung–Box cho phần dư, bình phương phần dư, ARCH-LM và Jarque–Bera trên train+validation. "
               "Ljung–Box dùng `model_df=0`; đây là chẩn đoán thăm dò sau chọn mô hình, không phải kiểm định chính thức "
               "đã điều chỉnh bậc tự do và quá trình tìm ngưỡng. ARCH-LM dùng số hệ số hồi quy để điều chỉnh ddof.", "",
               "`train_bic` trong lưới chỉ là tiêu chí tham khảo Gaussian với phương sai chung, đếm cả hệ số, ngưỡng và phương sai. "
               "Việc lựa chọn cuối cùng dựa vào validation RMSE. Nếu phần dư còn ARCH, SETAR ở đây chưa mô hình hóa phương sai động.", "",
               "Dự báo giá trong `forecasts.csv` là phép biến đổi `Close[t-1]*exp(predicted_return/100)`, "
-              "không phải kỳ vọng có điều kiện của giá vì chưa hiệu chỉnh Jensen. Chỉ dùng return để xếp hạng mô hình.", "",
+              "không phải kỳ vọng có điều kiện của giá vì chưa hiệu chỉnh Jensen. Cấu hình SETAR vẫn được chọn bằng RMSE return trên validation; bảng giá dùng để so sánh sau khi đã khóa mô hình.", "",
+              "Khoảng dự báo thực nghiệm chỉ phản ánh phân phối phần dư lịch sử theo chế độ, chưa cộng bất định tham số và chưa mô hình hóa ARCH. Do đó coverage test là kết quả cần đánh giá, không phải đảm bảo sẽ bằng 95%.", "",
               "Lưới ngưỡng hữu hạn có thể bỏ qua cực tiểu giữa các điểm; phạm vi p,d được đặt trước. "
               "Chưa xét bậc khác nhau giữa hai chế độ, ba chế độ hoặc dự báo nhiều bước. "
               "Dữ liệu cực đoan được giữ nguyên. Chẩn đoán trên từng chế độ không tự chứng minh tính dừng toàn cục của SETAR.", "",

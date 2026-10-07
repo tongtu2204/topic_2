@@ -18,7 +18,12 @@ def main():
     for figure in figures:
         plt.close(figure)
     report = write_results_note(base, config, evaluation, tables)
+    print("\nRETURN METRICS")
     print(evaluation["metrics"].to_string(index=False))
+    print("\nPRICE METRICS FOR CROSS-MODEL COMPARISON")
+    print(evaluation["price_metrics"].to_string(index=False))
+    print("\nSETAR 95% PREDICTION INTERVAL")
+    print(evaluation["interval_metrics"].to_string(index=False))
     print(f"SETAR: p={selected['SETAR'].p}, d={selected['SETAR'].d}")
     print(f"Results note: {report.relative_to(base)}")
 

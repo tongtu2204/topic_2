@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from setar_tar import SETARModel, fit_setar, forecast_one_step
+from setar_tar import SETARModel, common_metrics, fit_setar, forecast_one_step
 
 
 class SETARTests(unittest.TestCase):
@@ -44,6 +44,19 @@ class SETARTests(unittest.TestCase):
     def test_insufficient_regime_is_rejected(self):
         with self.assertRaisesRegex(ValueError, 'Too few observations'):
             fit_setar(np.arange(100, dtype=float), 2, 1, -1, start=4)
+
+    def test_common_metrics_use_declared_naive_scales(self):
+        actual = np.array([10., 12.])
+        predicted = np.array([9., 13.])
+        result = common_metrics(actual, predicted, mase_scale=.5,
+                                naive_rmse=2., previous=np.array([8., 12.]),
+                                percentage_metrics=True)
+        self.assertAlmostEqual(result['MAE'], 1.)
+        self.assertAlmostEqual(result['RMSE'], 1.)
+        self.assertAlmostEqual(result['MASE'], 2.)
+        self.assertAlmostEqual(result['Relative_RMSE_vs_Naive'], .5)
+        self.assertAlmostEqual(result['Direction_accuracy'], .5)
+        self.assertAlmostEqual(result['MAPE_percent'], 100*((1/10+1/12)/2))
 
 
 if __name__ == '__main__':

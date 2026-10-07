@@ -25,6 +25,8 @@ Train kết thúc năm 2024; validation là năm 2025; test gồm 172 phiên nă
 
 Kết quả và nhận xét chi tiết: [results/setar_tar/README.md](results/setar_tar/README.md). Đồ thị: [figures/setar_tar/](figures/setar_tar/).
 
+Mục 4 báo cáo kết quả trên cả log-return và giá. Bảng giá gồm MAE, RMSE, MAPE, sMAPE, MASE, độ chính xác chiều và Relative RMSE so với Naive trên cùng tập test; ngoài ra có khoảng dự báo SETAR 95% và chẩn đoán Ljung–Box, Jarque–Bera, ARCH-LM.
+
 Các notebook 01/02 ban đầu vẫn dùng đường dẫn `D:/Chuyên đề 2/...`; khi chạy lại hai notebook này cần sửa đường dẫn cho máy hiện tại. Notebook 05 và script mục 4 dùng đường dẫn theo repo, đọc các CSV đã có sẵn.
 
 ## Kiểm tra cách dựng lag và dự báo
