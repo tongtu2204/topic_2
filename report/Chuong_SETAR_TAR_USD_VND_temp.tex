@@ -1,0 +1,670 @@
+% !TeX program = xelatex
+% !TeX encoding = UTF-8
+\documentclass[a4paper,reqno,oneside]{book}
+
+% ==================== XeLaTeX / Unicode ====================
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{vietnamese}
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{TeX Gyre Termes}}
+\IfFontExistsTF{Arial}{\setsansfont{Arial}}{\setsansfont{TeX Gyre Heros}}
+\IfFontExistsTF{Consolas}{\setmonofont{Consolas}}{\setmonofont{Latin Modern Mono}}
+\usepackage{scrextend}
+\changefontsizes{13pt}
+
+% ==================== Gói dùng chung ====================
+\usepackage{amsmath,amssymb,mathtools,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs,longtable,array,tabularx,multirow}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage[table]{xcolor}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{url}
+\usepackage{xurl}
+\usepackage{hyperref}
+\urlstyle{rm}
+\renewcommand{\UrlFont}{\rmfamily}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{fancybox}
+\usepackage{indentfirst}
+
+\DeclareRobustCommand{\refcite}[2]{\texorpdfstring{\hyperlink{bib:#2}{[#1]}}{[#1]}}
+
+% ==================== Thiết lập bảng ====================
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{3pt}
+\setlength{\arrayrulewidth}{0.4pt}
+
+
+% ==================== Khổ trang / typography ====================
+\usepackage[left=3.5cm,right=2cm,top=2.0cm,bottom=2.0cm]{geometry}
+\setlength{\parindent}{1.2cm}
+\setlength{\parskip}{0pt}
+\linespread{1.30}\selectfont
+\setlist[itemize]{leftmargin=1.6em,itemsep=2pt,topsep=3pt}
+\setlist[enumerate]{leftmargin=1.6em,itemsep=2pt,topsep=3pt}
+\captionsetup{font=normalsize,labelfont=bf,labelsep=period,justification=centering,singlelinecheck=true,skip=6pt}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!55!black}
+
+\setlength{\textfloatsep}{12pt plus 2pt minus 2pt}
+\setlength{\floatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\renewcommand{\topfraction}{0.90}
+\renewcommand{\bottomfraction}{0.80}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.80}
+
+% ==================== Định dạng chương/mục ====================
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries\centering}
+  {\chaptertitlename\ \thechapter}{0pt}{\Large}
+\titlespacing*{\chapter}{0pt}{0pt}{15pt}
+\titleformat*{\section}{\bfseries\fontsize{13}{16}\selectfont}
+\titleformat*{\subsection}{\bfseries\fontsize{13}{16}\selectfont}
+\titleformat*{\subsubsection}{\bfseries\fontsize{13}{16}\selectfont}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+\renewcommand{\chaptername}{CHƯƠNG}
+\renewcommand{\contentsname}{MỤC LỤC}
+\renewcommand{\listfigurename}{DANH MỤC HÌNH VẼ}
+\renewcommand{\listtablename}{DANH MỤC BẢNG BIỂU}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\numberwithin{equation}{chapter}
+
+% ==================== Header / footer ====================
+\fancypagestyle{myplain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+  \fancyfoot[C]{\thepage}}
+\pagestyle{myplain}
+\makeatletter
+\let\ps@plain\ps@myplain
+\makeatother
+
+
+% Bản LaTeX tạm, chưa biên dịch; chỉ một chương nội dung.
+% Dựa trên định dạng report/main.tex của qh25_data_mining.
+% Đặt file trong topic_2/report/ hoặc ở thư mục gốc topic_2.
+% Khi ghép vào báo cáo: lấy nội dung giữa BEGIN CHAPTER và END CHAPTER;
+% chuyển các mục tham khảo xuống danh mục chung, tránh trùng bib:1..3.
+% Các hình dùng file đã có trong repo, không cần sinh lại hình.
+\newcommand{\setarfigure}[3]{%
+  \begin{figure}[htbp]
+    \centering
+    \IfFileExists{../figures/model_4_setar_tar/#1}{%
+      \includegraphics[width=0.96\linewidth,height=0.58\textheight,keepaspectratio]{../figures/model_4_setar_tar/#1}%
+    }{\IfFileExists{figures/model_4_setar_tar/#1}{%
+      \includegraphics[width=0.96\linewidth,height=0.58\textheight,keepaspectratio]{figures/model_4_setar_tar/#1}%
+    }{%
+      \fbox{\parbox{0.88\linewidth}{\centering
+        Hình có trong kho mã nguồn tại\par
+        \small\path{figures/model_4_setar_tar/#1}\par
+        Đặt file này trong thư mục gốc hoặc thư mục report của topic\_2 để nạp hình.}}%
+    }}
+    \caption{#2}\label{#3}
+  \end{figure}}
+
+\begin{document}
+\fontsize{13}{20}\selectfont
+
+% ==================== BEGIN CHAPTER ====================
+
+\chapter{PHƯƠNG PHÁP SỐ 4: SETAR/TAR VÀ THỰC NGHIỆM DỰ BÁO USD/VND}
+\label{chap:setar}
+
+\section{Mục tiêu và cơ sở lựa chọn phương pháp}
+
+Mô hình tự hồi quy ngưỡng (Threshold Autoregressive, TAR) cho phép quan hệ giữa giá trị hiện tại và các giá trị quá khứ thay đổi theo chế độ của chuỗi. Khác với mô hình AR tuyến tính dùng một bộ hệ số cho toàn bộ mẫu, TAR sử dụng các bộ hệ số khác nhau tại những miền giá trị của một biến ngưỡng. Cách tiếp cận này phù hợp để khảo sát khả năng phản ứng bất đối xứng của chuỗi theo lịch sử biến động; nó không mặc nhiên bảo đảm dự báo tốt hơn mô hình tuyến tính.
+
+Trong chương này, phương pháp số 4 được triển khai dưới dạng SETAR hai chế độ trên log-return của tỷ giá USD/VND. SETAR (Self-Exciting Threshold Autoregressive) là trường hợp của TAR trong đó biến quyết định chế độ là một giá trị trễ của chính chuỗi đang mô hình hóa. Nội dung lý thuyết tham khảo phần mô hình ngưỡng của Cryer và Chan \refcite{1}{1}; các giới hạn của suy luận thống kê đối với tham số ngưỡng được đối chiếu với Hansen \refcite{2}{2}. Các công thức ước lượng, dự báo và chỉ số dưới đây mô tả trực tiếp triển khai thực nghiệm trong kho mã nguồn \refcite{3}{3}.
+
+Mục tiêu thực nghiệm là kiểm tra liệu cơ chế hai chế độ có cải thiện dự báo một phiên kế tiếp trên dữ liệu ngoài mẫu hay không. Kết quả được so sánh với dự báo return bằng 0, return trung bình, AR tuyến tính và mô hình State Space số 3. Việc chọn cấu hình được thực hiện trên Train và Validation; Test chỉ phục vụ đánh giá cuối cùng.
+
+\section{Cơ sở lý thuyết của SETAR/TAR}
+
+\subsection{Biến đầu vào và ý nghĩa của thang đo}
+
+Gọi $P_t>0$ là giá đóng cửa của tỷ giá USD/VND ở quan sát thứ $t$, có đơn vị VND cho một USD. Biến đầu vào được định nghĩa bởi
+\begin{equation}
+  r_t=100\log\!\left(\frac{P_t}{P_{t-1}}\right).
+  \label{eq:setar-return}
+\end{equation}
+Chỉ số $t$ biểu thị thứ tự các quan sát có trong dữ liệu, không phải mọi ngày lịch. Vì vậy, một độ trễ tương ứng một quan sát trước đó; khoảng cuối tuần không được bổ sung bằng các ngày giả tạo. Giá trị $r_t=0{,}1$ biểu thị log-return $0{,}1\%$; sai số trên thang return được diễn giải bằng điểm phần trăm (đpt).
+
+Chuỗi giá có thể mang xu hướng dài hạn, trong khi return phù hợp hơn để phân tích động học của biến động ngắn hạn. Kết quả ADF của bước chuẩn bị dữ liệu cho thấy log-return có bằng chứng bác bỏ nghiệm đơn vị. Tuy nhiên, tính dừng của chuỗi đầu vào không tự động chứng minh tính dừng toàn cục của một mô hình SETAR đã ước lượng; chương này không thực hiện chứng minh hay kiểm định riêng cho điều kiện đó.
+
+\subsection{Mô hình hai chế độ}
+
+Dạng TAR tổng quát cho phép biến ngưỡng $z_t$ là một biến quan sát được hoặc ngoại sinh. Trong SETAR, chọn $z_t=r_{t-d}$, với $d\geq1$. Mô hình hai chế độ có thể viết
+\begin{equation}
+ r_t=
+ \begin{cases}
+ a_L+\displaystyle\sum_{j=1}^{p_L}\phi_{L,j}r_{t-j}+\varepsilon_t,
+       & r_{t-d}\leq\gamma,\\[3pt]
+ a_H+\displaystyle\sum_{j=1}^{p_H}\phi_{H,j}r_{t-j}+\varepsilon_t,
+       & r_{t-d}>\gamma.
+ \end{cases}
+ \label{eq:setar-general}
+\end{equation}
+Trong đó $a_L,a_H$ là hệ số chặn; $\phi_{L,j},\phi_{H,j}$ là hệ số tự hồi quy; $\gamma$ là ngưỡng; $d$ là độ trễ ngưỡng. Triển khai hiện tại dùng $p_L=p_H=p$ để kiểm soát độ phức tạp, nhưng vẫn cho hai chế độ có bộ hệ số độc lập. Độ trễ $d$ có thể lớn hơn $p$.
+
+Ký hiệu Low và High chỉ nói về vị trí của $r_{t-d}$ so với $\gamma$. Chúng không phải nhãn ``phiên tới giảm'' và ``phiên tới tăng''. Chẳng hạn, chế độ Low có thể xuất hiện khi return quá khứ âm đủ lớn, song return được dự báo cho phiên hiện tại vẫn có thể dương. Quy tắc tại điểm bằng ngưỡng là gán vào Low, đúng với điều kiện $r_{t-d}\leq\gamma$.
+
+Để mô hình hóa kỳ vọng có điều kiện, giả sử $\mathbb{E}(\varepsilon_t\mid\mathcal F_{t-1})=0$, trong đó $\mathcal F_{t-1}$ chứa thông tin đã quan sát trước phiên $t$. Ước lượng bình phương tối thiểu không yêu cầu áp đặt phân phối Gaussian cho việc tính hệ số. Ngược lại, giả định phân phối và động học phương sai có ảnh hưởng đến suy luận thống kê và độ tin cậy của khoảng dự báo; các kiểm định phần dư sẽ được trình bày riêng.
+
+\subsection{Ước lượng hệ số và tìm ngưỡng}
+
+Với $p,d,\gamma$ cho trước, đặt
+\[
+ \mathbf x_t=(1,r_{t-1},\ldots,r_{t-p})^\mathsf T,
+ \qquad
+ \boldsymbol\beta_s=(a_s,\phi_{s,1},\ldots,\phi_{s,p})^\mathsf T,
+ \quad s\in\{L,H\}.
+\]
+Các tập chỉ số của hai chế độ là
+\[
+ \mathcal I_L(\gamma)=\{t:r_{t-d}\leq\gamma\},
+ \qquad
+ \mathcal I_H(\gamma)=\{t:r_{t-d}>\gamma\}.
+\]
+Hệ số ở mỗi chế độ được ước lượng bằng bình phương tối thiểu có điều kiện:
+\begin{equation}
+ \widehat{\boldsymbol\beta}_s
+ =\arg\min_{\boldsymbol\beta_s}
+   \sum_{t\in\mathcal I_s(\gamma)}
+     (r_t-\mathbf x_t^\mathsf T\boldsymbol\beta_s)^2.
+ \label{eq:setar-cls}
+\end{equation}
+Khi ma trận thiết kế có hạng đầy đủ, nghiệm được tính ổn định bằng bộ giải bình phương tối thiểu. Những ứng viên thiếu hạng hoặc có quá ít quan sát ở một chế độ bị loại.
+
+Với từng cặp $(p,d)$, ngưỡng được chọn trong một lưới hữu hạn $\Gamma$:
+\begin{equation}
+ \widehat\gamma(p,d)=\arg\min_{\gamma\in\Gamma}
+   \left\{
+     \sum_{t\in\mathcal I_L(\gamma)}\widehat\varepsilon_{L,t}^{\,2}
+     +\sum_{t\in\mathcal I_H(\gamma)}\widehat\varepsilon_{H,t}^{\,2}
+   \right\}.
+ \label{eq:setar-threshold}
+\end{equation}
+Triển khai dùng tối đa 71 ngưỡng lấy theo phân vị từ $15\%$ đến $85\%$ của biến ngưỡng trong mẫu fit; các giá trị trùng được gộp. Mỗi chế độ cần ít nhất
+\[
+ n_s\geq\max\{\lceil0{,}15n_{\mathrm{fit}}\rceil,\;5(p+1)\}.
+\]
+Đây là tìm kiếm có giới hạn trên lưới đã định nghĩa, không phải khẳng định đã tìm tối ưu trên toàn bộ trục số thực. Các ứng viên sử dụng cùng mốc bắt đầu bằng 10 để so sánh trên cùng mẫu sau khi bỏ các quan sát cần cho lag.
+
+Hệ số và ngưỡng được học từ Train. Sau đó, $(p,d)$ được chọn bằng RMSE dự báo trên Validation. BIC trong bảng tìm kiếm chỉ là thông tin mô tả trong mẫu, không thay thế tiêu chí chọn ngoài mẫu. Sau khi cố định $(p,d)$, mô hình được refit trên Train cộng Validation; bước này được phép cập nhật ngưỡng và hệ số bằng mẫu fit mới.
+
+Theo Hansen \refcite{2}{2}, phân phối suy luận của ngưỡng có đặc điểm không chuẩn; dưới giả thuyết không có hiệu ứng ngưỡng, tham số ngưỡng không được nhận dạng theo cách thông thường. Vì vậy, việc SETAR có SSR nhỏ hơn AR trong mẫu không đủ để kết luận có phi tuyến có ý nghĩa thống kê. Thực nghiệm này chưa triển khai kiểm định hiệu ứng ngưỡng chuyên biệt và không dùng $F$-test thông thường để đưa ra kết luận đó.
+
+\subsection{Dự báo một bước và chuyển về tỷ giá}
+
+Tại phiên $t$, chế độ $s_t$ được xác định bằng $r_{t-d}$ đã biết. Dự báo return là
+\begin{equation}
+ \widehat r_{t\mid t-1}
+ =\widehat a_{s_t}+\sum_{j=1}^{p}\widehat\phi_{s_t,j}r_{t-j}.
+ \label{eq:setar-forecast}
+\end{equation}
+Sau khi dự báo được ghi nhận, quan sát thực tế $r_t$ mới được đưa vào lịch sử để dự báo phiên sau. Các tham số không được fit lại trên Test. Cách đánh giá này là rolling one-step-ahead với tham số cố định, khác với dự báo cả giai đoạn Test chỉ từ thông tin cuối năm 2025.
+
+Phép chuyển trực tiếp $P_{t-1}\exp(\widehat r_{t\mid t-1}/100)$ là dự báo plug-in và nói chung không bằng kỳ vọng có điều kiện của giá. Để hiệu chỉnh phép chuyển thang phi tuyến, thực nghiệm ước lượng hệ số smearing theo chế độ:
+\begin{equation}
+ \widehat c_s=\frac{1}{n_s}\sum_{i\in\mathcal I_s}
+                  \exp(\widehat\varepsilon_i/100),
+ \qquad
+ \widehat P_{t\mid t-1}
+ =P_{t-1}\exp(\widehat r_{t\mid t-1}/100)\widehat c_{s_t}.
+ \label{eq:setar-price}
+\end{equation}
+$\widehat c_s$ chỉ dùng phần dư của mẫu fit tương ứng. Đây là xấp xỉ theo phân phối phần dư kinh nghiệm trong từng chế độ; nó chưa mô hình hóa đầy đủ sự thay đổi phương sai theo thời gian. Bản dự báo plug-in chưa hiệu chỉnh cũng được lưu để đối chiếu.
+
+\section{Dữ liệu và thiết kế thực nghiệm}
+
+\subsection{Dữ liệu, chia tập và kiểm soát thông tin tương lai}
+
+Dữ liệu gồm 2\,784 quan sát giá từ 04/01/2016 đến 31/08/2026. Dữ liệu return còn 2\,783 quan sát vì phiên đầu chưa có giá trước đó để tính theo \eqref{eq:setar-return}. Các tập được chia theo thời gian như Bảng~\ref{tab:setar-splits}, không xáo trộn ngẫu nhiên.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Thiết kế chia dữ liệu theo thời gian}
+\label{tab:setar-splits}
+\begin{tabular}{lrrr}
+\toprule
+Tập & Thời gian & Giá & Return \\
+\midrule
+Train & 04/01/2016--31/12/2024 & 2\,347 & 2\,346 \\
+Validation & 01/01/2025--31/12/2025 & 262 & 262 \\
+Test & 01/01/2026--31/08/2026 & 175 & 175 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Các cột ngày và giá được chuẩn hóa; giá và log-return được đối chiếu theo ngày, gồm cả return tại ranh giới giữa các tập. Không có giá đóng cửa thiếu, không dương hoặc ngày trùng trong dữ liệu đưa vào mô hình. Có 569 dòng bị gắn cờ không thỏa logic OHLC: 542 dòng Train và 27 dòng Validation. Các dòng này được giữ nguyên, vì phân tích sử dụng Close; kết quả do đó vẫn phụ thuộc chất lượng Close của nguồn dữ liệu. Không biến đổi hay sửa giá chỉ để cải thiện kết quả dự báo.
+
+Mẫu Train có 2\,346 return, mẫu Train cộng Validation có 2\,608 return. Do mốc lag chung bằng 10, số quan sát thực sự tham gia fit lần lượt là 2\,336 và 2\,598. Test gồm 175 dự báo, mỗi dự báo được tạo trước khi quan sát thực tế của phiên tương ứng được sử dụng.
+
+\subsection{Các mô hình đối chứng}
+
+Các đối chứng trên thang return gồm: (i) Zero, $\widehat r_t=0$; (ii) Mean, $\widehat r_t=\bar r_{\mathrm{fit}}$; và (iii) AR tuyến tính, có bậc được chọn trên Validation từ $1$ đến $10$. Zero tương ứng dự báo tỷ giá Naive $\widehat P_t=P_{t-1}$. Mean và AR sử dụng hiệu chỉnh chuyển thang bằng phân phối phần dư của mẫu fit khi tính dự báo giá chính.
+
+Để liên hệ với các phương pháp khác của bài, dự báo tỷ giá của mô hình State Space số 3 được đọc từ kết quả đã lưu. Ngày Test và giá thật được kiểm tra trùng hoàn toàn trước khi tính lại cùng bộ chỉ số. Đây là đối chiếu forecast đã có; mô hình 3 không được huấn luyện lại trong thí nghiệm số 4.
+
+\section{Các chỉ số đánh giá}
+
+\subsection{Sai số điểm và chuẩn so sánh}
+
+Gọi $y_t$ là giá trị thực tế, $\widehat y_t$ là dự báo và $e_t=y_t-\widehat y_t$ trên $n$ quan sát đánh giá. Các chỉ số chính là
+\begin{align}
+ \mathrm{MAE}&=\frac1n\sum_t|e_t|,&
+ \mathrm{MSE}&=\frac1n\sum_t e_t^2,&
+ \mathrm{RMSE}&=\sqrt{\mathrm{MSE}},\label{eq:setar-errors}\\
+ \mathrm{Bias}&=\frac1n\sum_t e_t,&
+ \mathrm{MedianAE}&=\operatorname{median}_t|e_t|,&
+ \mathrm{MaxAE}&=\max_t|e_t|.\nonumber
+\end{align}
+Bias âm nghĩa là dự báo trung bình cao hơn giá trị thực tế. RMSE phạt mạnh các sai số lớn hơn MAE; median và max absolute error bổ sung thông tin về phân bố sai số.
+
+Trên thang giá dương, dùng
+\begin{align}
+ \mathrm{MAPE}&=\frac{100}{n}\sum_t\left|\frac{e_t}{y_t}\right|,\\
+ \mathrm{sMAPE}&=\frac{100}{n}\sum_t\frac{2|e_t|}{|y_t|+|\widehat y_t|},\\
+ \mathrm{WAPE}&=100\frac{\sum_t|e_t|}{\sum_t|y_t|}.
+\end{align}
+MAPE và sMAPE không được dùng để diễn giải return, do biến mục tiêu có giá trị bằng 0, gần 0 và có dấu. WAPE được lưu trên cả hai thang đo nhưng không thay thế so sánh với benchmark.
+
+Các chỉ số chuẩn hóa gồm
+\begin{align}
+ q_{\mathrm{fit}}&=\frac{1}{m-1}\sum_{i=2}^{m}|y_i-y_{i-1}|,\\
+ \mathrm{MASE}&=\frac{\mathrm{MAE}}{q_{\mathrm{fit}}},\qquad
+ \mathrm{rRMSE}=\frac{\mathrm{RMSE}_{\mathrm{model}}}
+                        {\mathrm{RMSE}_{\mathrm{benchmark}}},\\
+ \mathrm{Gain}_{\mathrm{RMSE}}&=100(1-\mathrm{rRMSE}),\\
+ R^2_{\mathrm{OS}}&=1-\frac{\sum_t e_t^2}{\sum_t(y_t-\bar y_{\mathrm{eval}})^2}.
+\end{align}
+Với tỷ giá, benchmark của rRMSE là giá phiên trước trên đúng tập đánh giá. Với return, benchmark của rRMSE là Zero; trong khi thang MASE vẫn dùng chênh lệch return kế tiếp trong mẫu fit, tức chuẩn persistence return. Vì hai chuẩn khác nhau, MASE return nhỏ hơn 1 không đồng nghĩa mô hình thắng Zero trên Test. $R^2_{\mathrm{OS}}$ ở đây dùng trung bình thực tế của tập đánh giá làm mẫu số; nó có thể âm và không phải thước đo trực tiếp của ưu thế so với Naive.
+
+\subsection{Khả năng dự báo hướng}
+
+Đối với tỷ giá, đặt $s_t=\operatorname{sign}(P_t-P_{t-1})$ và $\widehat s_t=\operatorname{sign}(\widehat P_t-P_{t-1})$. Chỉ số dự báo hướng trên toàn bộ phiên là
+\begin{equation}
+ \mathrm{DA}=\frac{100}{n}\sum_t\mathbf1\{s_t=\widehat s_t\}.
+\end{equation}
+Có ba nhãn: giảm, không đổi và tăng. Chương này cũng báo cáo DA chỉ trên các phiên có mức thay đổi giá thực tế khác 0 và DA cân bằng, là trung bình recall của ba lớp thực tế. Naive luôn dự báo không đổi; vì vậy tỷ lệ khớp các phiên không đổi không phải năng lực dự báo hướng tăng hoặc giảm.
+
+\subsection{Khoảng dự báo và độ chắc chắn của chênh lệch sai số}
+
+Trong mỗi chế độ, lấy phân vị $2{,}5\%$ và $97{,}5\%$ của phần dư trong mẫu fit, ký hiệu $q_{s,0.025}$ và $q_{s,0.975}$. Khoảng dự báo return xấp xỉ là
+\[
+ [L_t^r,U_t^r]=
+ [\widehat r_t+q_{s_t,0.025},\widehat r_t+q_{s_t,0.975}].
+\]
+Khoảng trên thang tỷ giá được suy ra bằng phép biến đổi đơn điệu
+\[
+ [L_t^P,U_t^P]=
+ [P_{t-1}\exp(L_t^r/100),\;P_{t-1}\exp(U_t^r/100)].
+\]
+Không nhân thêm hệ số smearing vào hai biên này, vì chúng được xác định từ phân vị phân phối dự báo. Các phân vị không được hiệu chỉnh bằng Test. Khoảng chỉ mô tả bất định innovation kinh nghiệm theo chế độ; chưa bao gồm bất định tham số, ngưỡng và động học phương sai có điều kiện.
+
+Coverage là tỷ lệ $y_t\in[L_t,U_t]$, còn độ rộng trung bình là $n^{-1}\sum_t(U_t-L_t)$. Với mức sai số $\alpha=0{,}05$, interval score được tính bởi
+\begin{align}
+ \mathrm{IS}_{\alpha,t}
+  ={}&(U_t-L_t)
+  +\frac{2}{\alpha}(L_t-y_t)\mathbf1\{y_t<L_t\}\nonumber\\
+  &+\frac{2}{\alpha}(y_t-U_t)\mathbf1\{y_t>U_t\}.
+\end{align}
+Điểm số thấp hơn là tốt hơn vì cân bằng độ rộng và mức độ bỏ sót quan sát.
+
+Để đánh giá độ chắc chắn của chênh lệch sai số, dùng paired circular moving-block bootstrap trên chuỗi chênh lệch loss SETAR trừ benchmark. Thực nghiệm sử dụng 2\,000 mẫu, độ dài block bằng 5 và seed 20261010. Cách lấy mẫu theo block giữ một phần phụ thuộc thời gian giữa các sai số. Các khoảng tin cậy là thông tin mô tả theo giao thức này, chưa có khảo sát độ nhạy theo block và chưa hiệu chỉnh kiểm định nhiều lần.
+
+\section{Kết quả chọn cấu hình và ước lượng}
+
+\subsection{Lựa chọn trên Validation}
+
+Có 50 cặp $(p,d)$ SETAR và 10 bậc AR tuyến tính được so sánh. Mỗi cặp SETAR có một ngưỡng đã được chọn bằng SSR trên Train. Bảng~\ref{tab:setar-grid} trình bày sáu ứng viên SETAR tốt nhất theo RMSE Validation.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Sáu cấu hình SETAR có RMSE Validation thấp nhất}
+\label{tab:setar-grid}
+\begin{tabular}{rrrrr}
+\toprule
+$p$ & $d$ & $\widehat\gamma$ (đpt) & RMSE (đpt) & MAE (đpt) \\
+\midrule
+6 & 4 & $-0{,}039392$ & $0{,}165605$ & $0{,}100953$ \\
+10 & 4 & $-0{,}008533$ & $0{,}165879$ & $0{,}101341$ \\
+3 & 4 & $-0{,}008788$ & $0{,}165891$ & $0{,}101322$ \\
+8 & 4 & $-0{,}017952$ & $0{,}166245$ & $0{,}101036$ \\
+9 & 4 & $-0{,}008533$ & $0{,}166245$ & $0{,}101086$ \\
+7 & 4 & $-0{,}008533$ & $0{,}166550$ & $0{,}101611$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Cấu hình được chọn là $p=6$, $d=4$, với ngưỡng Train $\widehat\gamma=-0{,}03939218$ đpt. RMSE Validation của SETAR là $0{,}165605$ đpt, thấp hơn Zero ($0{,}168590$) khoảng $1{,}77\%$ và thấp hơn AR được chọn ($0{,}167174$). Tuy nhiên, MAE SETAR trên Validation bằng $0{,}100953$, cao hơn MAE Zero $0{,}097492$. Do đó, lợi ích xuất hiện ở tiêu chí RMSE dùng để chọn cấu hình, không nhất quán trên mọi chỉ số. Khoảng cách giữa các ứng viên SETAR đứng đầu cũng nhỏ.
+
+\setarfigure{01_validation_grid.png}{RMSE return trên Validation cho các cặp bậc $p$ và độ trễ ngưỡng $d$; ô đánh dấu là cấu hình được chọn.}{fig:setar-grid}
+\setarfigure{02_threshold_profile.png}{Hồ sơ SSR theo ngưỡng của cấu hình đã chọn trên Train và trên mẫu refit Train cộng Validation.}{fig:setar-threshold}
+\FloatBarrier
+
+\subsection{Mô hình cuối sau refit}
+
+Sau refit, bậc và độ trễ vẫn giữ $p=6$, $d=4$, còn ngưỡng là $\widehat\gamma=-0{,}03880847$ đpt. Trong 2\,598 quan sát fit, Low có 624 quan sát và High có 1\,974 quan sát. Ngưỡng dịch chuyển nhẹ so với lần fit trên Train, phù hợp việc mẫu ước lượng đã được mở rộng đến hết năm 2025.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Hệ số SETAR sau refit trên Train và Validation}
+\label{tab:setar-coef}
+\begin{tabular}{lrr}
+\toprule
+Thành phần & Chế độ Low & Chế độ High \\
+\midrule
+$a$ & $0{,}027187$ & $0{,}001217$ \\
+$\phi_1$ & $0{,}112797$ & $0{,}073145$ \\
+$\phi_2$ & $-0{,}001940$ & $-0{,}086873$ \\
+$\phi_3$ & $0{,}207512$ & $0{,}063990$ \\
+$\phi_4$ & $0{,}185035$ & $0{,}100400$ \\
+$\phi_5$ & $0{,}046388$ & $-0{,}042372$ \\
+$\phi_6$ & $0{,}103539$ & $0{,}044729$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Các bộ hệ số khác nhau mô tả phản ứng có điều kiện khác nhau ở hai miền của return trễ. Bảng~\ref{tab:setar-coef} chỉ trình bày giá trị ước lượng, chưa kèm khoảng tin cậy tham số hay kiểm định khác biệt giữa các chế độ; vì vậy không suy diễn ý nghĩa thống kê của từng chênh lệch hệ số.
+
+\section{Kết quả dự báo ngoài mẫu}
+
+\subsection{Sai số trên thang return}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Sai số dự báo return trên Validation và Test}
+\label{tab:setar-return}
+\begin{tabular}{llrrrr}
+\toprule
+Tập & Mô hình & MAE & RMSE & MASE & $\mathrm{rRMSE}_0$ \\
+\midrule
+Validation & Naive/Zero & $0{,}097492$ & $0{,}168590$ & $0{,}915013$ & $1{,}000000$ \\
+Validation & Mean & $0{,}097876$ & $0{,}168287$ & $0{,}918620$ & $0{,}998204$ \\
+Validation & AR(7) & $0{,}100433$ & $0{,}167174$ & $0{,}942614$ & $0{,}991596$ \\
+Validation & SETAR(6;4) & $0{,}100953$ & $0{,}165605$ & $0{,}947493$ & $0{,}982292$ \\
+Test & Naive/Zero & $0{,}070908$ & $0{,}115090$ & $0{,}642222$ & $1{,}000000$ \\
+Test & Mean & $0{,}072214$ & $0{,}115516$ & $0{,}654058$ & $1{,}003695$ \\
+Test & AR(7) & $0{,}072180$ & $0{,}116444$ & $0{,}653748$ & $1{,}011767$ \\
+Test & SETAR(6;4) & $0{,}074411$ & $0{,}118224$ & $0{,}673957$ & $1{,}027225$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Trên Test, SETAR có RMSE $0{,}118224$ đpt và MAE $0{,}074411$ đpt, đều cao hơn Zero và AR. So với Zero, RMSE tăng khoảng $2{,}72\%$. Ưu thế RMSE quan sát trên Validation không tiếp tục xuất hiện ở Test. Kết quả này cho thấy cấu hình được chọn chưa có bằng chứng về khả năng khái quát hóa tốt hơn benchmark đơn giản trong giai đoạn đánh giá cuối.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Các chỉ số bổ sung của dự báo return trên Test}
+\label{tab:setar-return-extra}
+\begin{tabular}{lrrrrr}
+\toprule
+Mô hình & MSE & Bias & Median AE & Max AE & $R^2_{\mathrm{OS}}$ \\
+\midrule
+Naive/Zero & $0{,}013246$ & $-0{,}004964$ & $0{,}039931$ & $0{,}575928$ & $-0{,}001864$ \\
+Mean & $0{,}013344$ & $-0{,}011078$ & $0{,}044143$ & $0{,}569814$ & $-0{,}009282$ \\
+AR(7) & $0{,}013559$ & $-0{,}007955$ & $0{,}042120$ & $0{,}571481$ & $-0{,}025580$ \\
+SETAR(6;4) & $0{,}013977$ & $-0{,}008684$ & $0{,}047196$ & $0{,}572989$ & $-0{,}057158$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+$R^2_{\mathrm{OS}}$ của SETAR trên return bằng $-0{,}057158$, tức SSE cao hơn chuẩn dự báo bằng trung bình thực tế Test trong định nghĩa của chỉ số này. Bias bằng $-0{,}008684$ đpt cho thấy mô hình dự báo return trung bình cao hơn return thực tế. WAPE return của SETAR bằng $104{,}9414\%$, so với $100\%$ của Zero. MASE SETAR bằng $0{,}673957<1$ nhưng không mâu thuẫn với việc thua Zero: thang MASE sử dụng persistence return trong mẫu fit, chứ không sử dụng Zero trên Test.
+
+\setarfigure{04_test_forecasts.png}{Return thực tế và dự báo rolling one-step trên Test; đồ thị dưới phóng đại các đường dự báo để thấy khác biệt giữa mô hình.}{fig:setar-return-forecast}
+\setarfigure{05_forecast_metrics.png}{MAE và RMSE return trên Validation và Test của các mô hình đối chứng.}{fig:setar-return-metrics}
+\FloatBarrier
+
+\subsection{Sai số tỷ giá và so sánh với State Space}
+
+MAE, RMSE, Bias, Median AE và Max AE trên thang tỷ giá có đơn vị VND/USD; MSE có đơn vị $(\mathrm{VND/USD})^2$. Các chỉ số MASE, rRMSE và $R^2_{\mathrm{OS}}$ không có đơn vị.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Đánh giá dự báo tỷ giá trên cùng 175 phiên Test}
+\label{tab:setar-price}
+\begin{tabular}{lrrrr}
+\toprule
+Mô hình & MAE & RMSE & MAPE (\%) & sMAPE (\%) \\
+\midrule
+Naive/Zero & $18{,}563$ & $30{,}053$ & $0{,}07090$ & $0{,}07091$ \\
+Mean & $18{,}912$ & $30{,}169$ & $0{,}07223$ & $0{,}07224$ \\
+AR(7) & $18{,}899$ & $30{,}406$ & $0{,}07219$ & $0{,}07220$ \\
+SETAR(6;4) & $19{,}484$ & $30{,}869$ & $0{,}07442$ & $0{,}07443$ \\
+State Space (MH 3) & $18{,}568$ & $30{,}055$ & $0{,}07092$ & $0{,}07093$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{Chỉ số sai số và chuẩn so sánh bổ sung trên thang tỷ giá}
+\label{tab:setar-price-extra}
+\begin{tabular}{lrrrrr}
+\toprule
+Mô hình & Bias & MASE & rRMSE & $R^2_{\mathrm{OS}}$ & WAPE (\%) \\
+\midrule
+Naive/Zero & $-1{,}300$ & $1{,}016289$ & $1{,}000000$ & $0{,}936698$ & $0{,}07072$ \\
+Mean & $-2{,}930$ & $1{,}035379$ & $1{,}003834$ & $0{,}936212$ & $0{,}07205$ \\
+AR(7) & $-2{,}115$ & $1{,}034686$ & $1{,}011734$ & $0{,}935204$ & $0{,}07200$ \\
+SETAR(6;4) & $-2{,}309$ & $1{,}066710$ & $1{,}027132$ & $0{,}933217$ & $0{,}07423$ \\
+State Space (MH 3) & $-1{,}325$ & $1{,}016560$ & $1{,}000037$ & $0{,}936694$ & $0{,}07074$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{Phân bố sai số tuyệt đối trên thang tỷ giá của Test}
+\label{tab:setar-price-tail}
+\begin{tabular}{lrrr}
+\toprule
+Mô hình & MSE & Median AE & Max AE \\
+\midrule
+Naive/Zero & $903{,}207$ & $10{,}500$ & $150{,}000$ \\
+Mean & $910{,}146$ & $11{,}635$ & $148{,}388$ \\
+AR(7) & $924{,}528$ & $11{,}078$ & $148{,}822$ \\
+SETAR(6;4) & $952{,}884$ & $12{,}420$ & $149{,}217$ \\
+State Space (MH 3) & $903{,}274$ & $10{,}525$ & $149{,}975$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Trên cùng 175 phiên Test, SETAR có MAE $19{,}484$ VND/USD, RMSE $30{,}869$ VND/USD và MAPE $0{,}07442\%$. Naive có MAE $18{,}563$ và RMSE $30{,}053$ VND/USD. Vì vậy, SETAR có RMSE cao hơn Naive khoảng $2{,}71\%$; MAE cao hơn khoảng $4{,}96\%$. State Space số 3 có RMSE $30{,}055$, gần bằng Naive và thấp hơn SETAR trong thí nghiệm này.
+
+MAPE trên mức tỷ giá nhỏ ở mọi mô hình, vì sai số vài chục VND được chia cho mức tỷ giá khoảng vài chục nghìn VND/USD. Không nên chuyển MAPE nhỏ thành khẳng định ``độ chính xác gần 100\%''. Tương tự, $R^2_{\mathrm{OS}}$ trên giá cao ở cả Naive và SETAR phản ánh việc các dự báo bám mức giá, không chứng minh mô hình đã khai thác được tín hiệu return hữu ích. So sánh trực tiếp với Naive trên cùng ngày đánh giá có ý nghĩa hơn đối với câu hỏi mô hình có tạo thêm lợi ích dự báo hay không.
+
+\setarfigure{10_cross_model_price_comparison.png}{So sánh MAE và RMSE tỷ giá của SETAR, các baseline và State Space số 3 trên cùng tập Test.}{fig:setar-cross-model}
+\FloatBarrier
+
+\subsection{Dự báo hướng và hành vi theo chế độ}
+
+Test gồm 87 phiên giảm, 18 phiên không đổi và 70 phiên tăng. Bảng~\ref{tab:setar-direction} tách chỉ số trên toàn bộ phiên và trên những phiên thực sự thay đổi giá.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Dự báo hướng biến động tỷ giá trên Test}
+\label{tab:setar-direction}
+\begin{tabular}{lrrr}
+\toprule
+Mô hình & DA toàn bộ (\%) & DA khác 0 (\%) & DA cân bằng (\%) \\
+\midrule
+Naive/Zero & $10{,}29$ & $0{,}00$ & $33{,}33$ \\
+Mean & $40{,}00$ & $44{,}59$ & $33{,}33$ \\
+AR(7) & $49{,}71$ & $55{,}41$ & $37{,}89$ \\
+SETAR(6;4) & $48{,}57$ & $54{,}14$ & $37{,}22$ \\
+State Space (MH 3) & $40{,}00$ & $44{,}59$ & $33{,}33$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+SETAR dự báo đúng hướng ở 85/175 phiên, tương đương $48{,}57\%$. Khi chỉ xét 157 phiên có giá thực tế thay đổi, tỷ lệ bằng $54{,}14\%$. DA cân bằng của SETAR là $37{,}22\%$, gần hơn với mức tham chiếu $1/3$ của phân loại ba nhãn so với cách chỉ nhìn accuracy tổng thể. AR có DA toàn bộ $49{,}71\%$ và DA khác 0 $55{,}41\%$, đều cao hơn SETAR. Những tỷ lệ này chỉ mô tả mẫu đánh giá; chương chưa kiểm định riêng năng lực dự báo hướng hay đánh giá lợi nhuận giao dịch sau chi phí.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Đặc điểm hai chế độ SETAR trên Test; đơn vị return là điểm phần trăm}
+\label{tab:setar-regime}
+\begin{tabular}{lrrrrr}
+\toprule
+Chế độ & $N$ & TB return & ĐLC return & MAE & RMSE \\
+\midrule
+Low & 53 & $-0{,}013618$ & $0{,}132296$ & $0{,}096697$ & $0{,}137401$ \\
+High & 122 & $-0{,}001205$ & $0{,}107484$ & $0{,}064730$ & $0{,}108845$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Trong Test, Low xuất hiện ở 53 phiên và High ở 122 phiên. Low có độ lệch chuẩn return thực tế $0{,}132296$ đpt và RMSE $0{,}137401$ đpt, cao hơn các giá trị tương ứng của High ($0{,}107484$ và $0{,}108845$). Cơ chế ngưỡng nhận diện các nhóm có hành vi biến động khác nhau trong mẫu này, song sự phân nhóm đó chưa giúp giảm sai số tổng thể so với Zero hoặc AR.
+
+\setarfigure{03_test_regimes.png}{Hai chế độ trên Test được quyết định bằng return trễ, cùng return thực tế ở từng chế độ.}{fig:setar-regimes}
+\setarfigure{11_directional_accuracy.png}{DA trên toàn bộ phiên và trên các phiên thực tế đổi giá; dự báo không đổi của Naive không phải tín hiệu tăng/giảm.}{fig:setar-direction}
+\FloatBarrier
+
+\section{Khoảng dự báo và chẩn đoán phần dư}
+
+\subsection{Chất lượng khoảng dự báo}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Khoảng dự báo danh nghĩa 95\% của SETAR}
+\label{tab:setar-interval}
+\begin{tabular}{llrrr}
+\toprule
+Tập & Thang đo & Coverage (\%) & Độ rộng TB & Interval score \\
+\midrule
+Validation & Return (đpt) & $93{,}13$ & $0{,}5452$ & $1{,}1337$ \\
+Validation & Tỷ giá (VND/USD) & $93{,}13$ & $141{,}7580$ & $291{,}9731$ \\
+Test & Return (đpt) & $96{,}00$ & $0{,}5662$ & $0{,}7618$ \\
+Test & Tỷ giá (VND/USD) & $96{,}00$ & $148{,}6113$ & $199{,}6297$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Trên Test, 168/175 quan sát nằm trong khoảng dự báo, đạt coverage $96\%$, với 3 quan sát nằm dưới biên thấp và 4 quan sát nằm trên biên cao. Độ rộng trung bình của khoảng tỷ giá là $148{,}611$ VND/USD. Coverage gần mức danh nghĩa $95\%$ cho thấy khoảng kinh nghiệm có độ bao phủ phù hợp trên tập Test cụ thể này, nhưng không chứng minh phân phối dự báo đã đúng hoàn toàn.
+
+State Space số 3 có coverage $94{,}86\%$, độ rộng trung bình $141{,}570$ VND/USD và interval score $195{,}106$. SETAR đạt coverage cao hơn nhưng khoảng rộng hơn; interval score $199{,}630$ cũng cao hơn State Space. Vì vậy, không thể kết luận khoảng SETAR tốt hơn chỉ vì coverage $96\%$ lớn hơn $94{,}86\%$. Quan trọng hơn, coverage $96\%$ hoàn toàn khác DA $48{,}57\%$ và không phải tỷ lệ dự báo đúng một mức tỷ giá cụ thể.
+
+\setarfigure{09_test_price_prediction_interval.png}{Tỷ giá thực tế, dự báo SETAR một bước và khoảng dự báo kinh nghiệm danh nghĩa 95\% trên Test.}{fig:setar-interval}
+\FloatBarrier
+
+\subsection{Phần dư trong mẫu fit và sai số trên Test}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Chẩn đoán phần dư SETAR trên mẫu refit (2\,598 quan sát)}
+\label{tab:setar-diag-fit}
+\begin{tabular}{lrrr}
+\toprule
+Kiểm định & Lag & Thống kê & $p$-value \\
+\midrule
+Ljung--Box phần dư & 5 & $0{,}236$ & $0{,}998682$ \\
+Ljung--Box phần dư bình phương & 5 & $343{,}685$ & $4{,}005\times 10^{-72}$ \\
+Ljung--Box phần dư & 10 & $3{,}587$ & $0{,}964053$ \\
+Ljung--Box phần dư bình phương & 10 & $451{,}218$ & $1{,}149\times 10^{-90}$ \\
+Ljung--Box phần dư & 20 & $7{,}842$ & $0{,}992863$ \\
+Ljung--Box phần dư bình phương & 20 & $486{,}144$ & $2{,}308\times 10^{-90}$ \\
+ARCH--LM & 10 & $229{,}301$ & $1{,}204\times 10^{-43}$ \\
+Jarque--Bera & -- & $17239{,}577$ & $<10^{-300}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{table}[htbp]
+\centering\small
+\caption{Chẩn đoán sai số dự báo SETAR trên 175 phiên Test}
+\label{tab:setar-diag-test}
+\begin{tabular}{lrrr}
+\toprule
+Kiểm định & Lag & Thống kê & $p$-value \\
+\midrule
+Ljung--Box sai số & 5 & $14{,}973$ & $0{,}010480$ \\
+Ljung--Box sai số & 10 & $23{,}904$ & $0{,}007858$ \\
+Ljung--Box sai số & 20 & $51{,}979$ & $1{,}147\times 10^{-4}$ \\
+Ljung--Box sai số bình phương & 5 & $28{,}227$ & $3{,}287\times 10^{-5}$ \\
+Ljung--Box sai số bình phương & 10 & $48{,}459$ & $5{,}116\times 10^{-7}$ \\
+Ljung--Box sai số bình phương & 20 & $65{,}280$ & $1{,}053\times 10^{-6}$ \\
+ARCH--LM & 10 & $25{,}945$ & $0{,}003815$ \\
+Jarque--Bera & -- & $367{,}077$ & $1{,}951\times 10^{-80}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Trên mẫu refit, Ljung--Box phần dư tại lag 20 có $p=0{,}992863$, chưa phát hiện tự tương quan tại các lag đã kiểm tra theo cách tính chẩn đoán hiện tại. Tuy nhiên, phần dư bình phương có $p$-value rất nhỏ; ARCH--LM có $p\approx1{,}204\times10^{-43}$ và Jarque--Bera cho giá trị dưới ngưỡng biểu diễn số của kết quả lưu. Phần dư có kurtosis khoảng $15{,}606$, cao hơn 3 của phân phối chuẩn. Điều này cho thấy mô hình kỳ vọng vẫn bỏ sót biến động phương sai và các đặc điểm đuôi dày.
+
+Đối với sai số dự báo Test, Ljung--Box tại lag 20 có $p\approx0{,}000115$; ARCH--LM có $p\approx0{,}003815$; Jarque--Bera có $p\approx1{,}951\times10^{-80}$. Như vậy, kết quả residual trong mẫu tốt về tự tương quan không chuyển thành forecast error ngoài mẫu không có cấu trúc. Sai số Test vẫn có phụ thuộc thời gian, phương sai có điều kiện và sai lệch khỏi chuẩn.
+
+Các $p$-value này mang tính chẩn đoán: phần dư được tạo sau ước lượng và chọn mô hình, cách tính Ljung--Box đang dùng bậc tự do chẩn đoán chưa hiệu chỉnh theo toàn bộ quá trình chọn ngưỡng, và chưa điều chỉnh kiểm định nhiều lần. Chúng không phải bằng chứng kiểm định có hoặc không có hiệu ứng ngưỡng. Chúng hỗ trợ nhận xét về giới hạn của mô hình trung bình và khoảng dự báo kinh nghiệm.
+
+\setarfigure{07_residual_diagnostics.png}{Phần dư trong mẫu refit, phân phối phần dư, ACF phần dư và ACF phần dư bình phương của SETAR.}{fig:setar-residuals}
+\setarfigure{12_test_errors_qq.png}{Sai số dự báo return trên Test và Q--Q plot so với phân phối chuẩn.}{fig:setar-test-errors}
+\FloatBarrier
+
+\section{Độ chắc chắn của chênh lệch sai số}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Chênh lệch loss tỷ giá: SETAR trừ benchmark và CI bootstrap 95\%}
+\label{tab:setar-loss}
+\begin{tabular}{llrrr}
+\toprule
+Benchmark & Loss & TB chênh lệch & CI dưới & CI trên \\
+\midrule
+Naive/Zero & Bình phương & $49{,}6766$ & $-21{,}5091$ & $118{,}9781$ \\
+Naive/Zero & Tuyệt đối & $0{,}9210$ & $0{,}0044$ & $1{,}9186$ \\
+Mean & Bình phương & $42{,}7375$ & $-34{,}1993$ & $115{,}9711$ \\
+Mean & Tuyệt đối & $0{,}5723$ & $-0{,}3817$ & $1{,}5454$ \\
+AR(7) & Bình phương & $28{,}3555$ & $-11{,}8846$ & $70{,}6271$ \\
+AR(7) & Tuyệt đối & $0{,}5849$ & $0{,}1428$ & $1{,}0437$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Trong Bảng~\ref{tab:setar-loss}, loss bình phương có đơn vị $(\mathrm{VND/USD})^2$, còn loss tuyệt đối có đơn vị VND/USD. Chênh lệch bình phương trung bình giữa SETAR và Naive bằng $49{,}6766$, nhưng CI95\% khoảng $[-21{,}5091;118{,}9781]$ chứa 0. Các CI của chênh lệch bình phương so với Mean và AR cũng chứa 0. Vì vậy, theo bootstrap block đã dùng, chưa có bằng chứng rõ rằng khác biệt squared loss ổn định trên mẫu Test ngắn này.
+
+Chênh lệch absolute loss so với AR có CI95\% $[0{,}1428;1{,}0437]$, hoàn toàn dương, gợi ý SETAR kém hơn AR theo MAE trong giao thức bootstrap này. Với Naive, CI absolute loss có biên dưới rất gần 0 ($0{,}0044$), nên kết luận có thể nhạy với lựa chọn block, mẫu đánh giá hoặc cách suy luận. Kho kết quả còn lưu thống kê HAC với bandwidth bằng 5 và $p$-value chuẩn xấp xỉ; đối với Naive và absolute loss, $p\approx0{,}0591$, khác với kết luận theo CI bootstrap. Chương không gộp các cách suy luận này thành một khẳng định chắc chắn và không dùng chúng để chứng minh phi tuyến SETAR.
+
+\setarfigure{06_cumulative_loss.png}{Chênh lệch loss return tích lũy giữa SETAR và các baseline; giá trị dương nghĩa SETAR có sai số cao hơn.}{fig:setar-loss}
+\FloatBarrier
+
+\section{Thảo luận và kết luận}
+
+Thực nghiệm cho thấy SETAR hai chế độ có thể mô tả quan hệ tự hồi quy thay đổi theo return quá khứ. Cấu hình $p=6$, $d=4$ được chọn hợp lệ bằng Validation; ngưỡng cuối $-0{,}03880847$ đpt và các hệ số riêng của hai chế độ được ước lượng bằng Train cộng Validation. Các dự báo Test chỉ sử dụng thông tin đã có trước phiên mục tiêu, nên không lấy giá thật hiện tại để tạo forecast cho chính phiên đó.
+
+Tuy nhiên, cấu trúc linh hoạt hơn chưa tạo ra ưu thế dự báo ngoài mẫu. SETAR có RMSE tỷ giá $30{,}869$ VND/USD, cao hơn Naive khoảng $2{,}71\%$, và MAE $19{,}484$ VND/USD cũng cao hơn Naive. Kết quả trên return nhất quán với nhận xét này. Lợi ích RMSE trên Validation không được duy trì trên Test; vì vậy chưa có cơ sở kết luận phương pháp số 4 tốt hơn benchmark hoặc State Space số 3 trong bộ dữ liệu và giao thức hiện tại.
+
+Coverage $96\%$ của khoảng dự báo là một kết quả về độ bao phủ, không phải độ chính xác dự báo hướng. Khoảng SETAR rộng hơn State Space, trong khi interval score chưa tốt hơn. Kiểm định phần dư và forecast error còn chỉ ra phương sai thay đổi, đuôi dày và tự tương quan ngoài mẫu. Những đặc điểm này giới hạn cách diễn giải khoảng dự báo và cho thấy SETAR kỳ vọng hiện tại chưa giải thích đầy đủ động học biến động của tỷ giá.
+
+Kết luận trên giới hạn ở 175 phiên Test của năm 2026, phạm vi cấu hình đã thử và nguồn dữ liệu được cung cấp. Chương chưa đánh giá dự báo nhiều bước, kiểm định phi tuyến chuyên biệt, độ nhạy theo thời kỳ hoặc lợi nhuận sau chi phí. Những hướng mở rộng đó có thể được khảo sát trong nghiên cứu tiếp theo với các giai đoạn đánh giá mới; không tiếp tục điều chỉnh cấu hình theo kết quả Test đã quan sát rồi dùng cùng Test để khẳng định cải thiện.
+
+\section*{Thông tin tái lập}
+Mã nguồn, bảng kết quả và hình minh họa được đối chiếu tại commit
+\texttt{0043b0d} của kho \texttt{tongtu2204/topic\_2} \refcite{3}{3}.
+Notebook thực nghiệm là \path{code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb}; các kết quả nằm trong \path{results/model_4_setar_tar/}, hình trong \path{figures/model_4_setar_tar/}. Tám kiểm tra căn chỉnh lag, quy tắc ngưỡng và việc không sử dụng trước thông tin đã đạt; các cell code của notebook cũng đã được chạy. Chương này là bản nguồn LaTeX tạm, chưa được biên dịch hay kiểm tra dàn trang bằng PDF.
+
+\section*{Tài liệu tham khảo}
+\begin{enumerate}[label={[\arabic*]},leftmargin=1.2cm,itemsep=6pt]
+ \item \hypertarget{bib:1}{}J. D. Cryer và K.-S. Chan.
+ \textit{Time Series Analysis: With Applications in R}, ấn bản 2.
+ Springer, 2008. Phần Threshold Models, tr.~383--422.
+ \url{https://doi.org/10.1007/978-0-387-75959-3}.
+
+ \item \hypertarget{bib:2}{}B. E. Hansen.
+ ``Inference in TAR Models.''
+ \textit{Studies in Nonlinear Dynamics and Econometrics}, tập 2, số 1, 1997.
+ \url{https://users.ssc.wisc.edu/~behansen/papers/snde_97.html}.
+
+ \item \hypertarget{bib:3}{}Nhóm thực nghiệm.
+ \textit{topic\_2: phân tích và dự báo tỷ giá USD/VND}.
+ Kho mã nguồn GitHub, commit \texttt{0043b0d1ef4146232a46e45bb73edf41dc1cb2fb}, 2026.
+ \url{https://github.com/tongtu2204/topic_2/tree/0043b0d1ef4146232a46e45bb73edf41dc1cb2fb}.
+\end{enumerate}
+
+% ==================== END CHAPTER ====================
+\end{document}
