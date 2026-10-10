@@ -90,7 +90,8 @@
 % Bản LaTeX tạm, chưa biên dịch; gồm hai chương: lý thuyết và thực nghiệm.
 % Dựa trên định dạng report/main.tex của qh25_data_mining.
 % Đặt file trong topic_2/report/ hoặc ở thư mục gốc topic_2.
-% Khi ghép vào báo cáo: lấy nội dung giữa BEGIN REPORT và END REPORT.
+% Khi ghép vào báo cáo gốc: chỉ lấy các khối BEGIN COPY ... END COPY.
+% Các ghi chú setarnote và hướng dẫn ghép không thuộc nội dung nộp cuối cùng.
 % Các hình dùng file đã có trong repo, không cần sinh lại hình.
 \newcommand{\setarfigure}[3]{%
   \begin{figure}[htbp]
@@ -108,95 +109,82 @@
     \caption{#2}\label{#3}
   \end{figure}}
 
+
+% Ghi chú biên tập: chỉ dùng để nhận biết phần đóng góp của phương pháp số 4.
+\newcommand{\setarnote}[1]{%
+  \begin{quote}\small\color{blue!55!black}
+  \textbf{GHI CHÚ GHÉP -- PHẦN CỦA PHƯƠNG PHÁP SỐ 4:} #1
+  \end{quote}}
+
 \begin{document}
 \fontsize{13}{20}\selectfont
 
-% ==================== BEGIN REPORT ====================
 
-\chapter{CƠ SỞ LÝ THUYẾT CỦA PHƯƠNG PHÁP SETAR/TAR}
+\section*{Hướng dẫn chép phần SETAR/TAR vào báo cáo chung}
+
+\setarnote{Đối chiếu với file Word ``Báo cáo USD/VND -- Cơ sở lý thuyết và thực nghiệm 5 mô hình'' anh đã cung cấp. Đây là bản phần đóng góp để ghép; các mục đích chép và vị trí chèn được ghi ngay trước từng khối. Các ghi chú này không phải nội dung học thuật của báo cáo cuối.}
+
+\begin{enumerate}
+  \item \textbf{A1, A2, A3 -- lý thuyết:} bổ sung vào Phần I, mục 4.4. A1 đặt sau mục 4.4.2; A2 đặt sau đoạn chuyển return về giá ở mục 4.4.4; A3 thêm thành tiểu mục ngay sau A2. Giữ nguyên phần lý thuyết nền đã có của tác giả.
+  \item \textbf{A4 -- quy ước chỉ số:} bổ sung những định nghĩa còn thiếu vào Phần I, mục 3.4; có thể để riêng trong phần phương pháp số 4. Không chép lại các công thức MAE/RMSE/MAPE đã có nếu đã thống nhất cùng định nghĩa.
+  \item \textbf{B -- thực nghiệm:} thay nội dung khung của Phần II, mục 7.4 bằng toàn bộ khối B. Bảng tổng hợp là phần đầu tiên, sau đó mới đến giao thức, lựa chọn cấu hình và phân tích chi tiết. Đánh số lại các đề mục thành 7.4.1, 7.4.2,\ldots\ theo cấu trúc báo cáo chung.
+  \item \textbf{C -- bảng chung:} chỉ lấy hàng SETAR/TAR để điền vào Phần II, mục 8.4. Các chỉ số ở khối C đều trên thang giá VND/USD.
+  \item \textbf{D -- phụ lục và trạng thái:} chép các dòng liên quan vào Phụ lục A, B; cập nhật mô tả phạm vi ở phần mở đầu và Phần II để phản ánh việc đã bổ sung thực nghiệm số 4.
+\end{enumerate}
+
+Khi ghép vào nguồn LaTeX, không chép \verb|\documentclass|, phần thiết lập trang, \verb|\begin{document}|, \verb|\end{document}| hoặc hai lệnh \verb|\chapter| của bản tạm. Hạ cấp \verb|\section|/\verb|\subsection| theo cấp mục của file gốc. Giữ các nhãn \verb|eq:setar-*|, \verb|tab:setar-*| và \verb|fig:setar-*|; nếu đổi nhãn phải đổi đồng thời mọi tham chiếu. Nguồn dùng ký hiệu $\tau$ cho ngưỡng để thống nhất với báo cáo chung.
+
+Với hình, mang theo các PNG được gọi trong \path{figures/model_4_setar_tar/}. Nếu ghép vào LaTeX, thêm định nghĩa \verb|\setarfigure| và kiểu cột \verb|L| cùng các gói bảng/hình cần thiết ở preamble. Nếu ghép vào Word, chèn hình từ PNG, chép bảng dưới dạng bảng Word và nhập các công thức vào Equation.
+
+\clearpage
+\chapter{PHẦN BỔ SUNG LÝ THUYẾT SETAR/TAR}
 \label{chap:setar-theory}
 
-\section{Mục tiêu và cơ sở lựa chọn phương pháp}
+\setarnote{A1 -- bổ sung sau Phần I, mục 4.4.2. Chép nội dung giữa hai dòng đánh dấu; bỏ ghi chú hướng dẫn này khi ghép.}
+% ===== BEGIN COPY A1 / BẮT ĐẦU PHẦN CẦN CHÉP =====
+\section{Đặc tả mô hình được triển khai}
 
-Mô hình tự hồi quy ngưỡng (Threshold Autoregressive, TAR) cho phép quan hệ giữa giá trị hiện tại và các giá trị quá khứ thay đổi theo chế độ của chuỗi. Khác với mô hình AR tuyến tính dùng một bộ hệ số cho toàn bộ mẫu, TAR sử dụng các bộ hệ số khác nhau tại những miền giá trị của một biến ngưỡng. Cách tiếp cận này phù hợp để khảo sát khả năng phản ứng bất đối xứng của chuỗi theo lịch sử biến động; nó không mặc nhiên bảo đảm dự báo tốt hơn mô hình tuyến tính.
-
-Trong báo cáo này, phương pháp số 4 được triển khai dưới dạng SETAR hai chế độ trên log-return của tỷ giá USD/VND. SETAR (Self-Exciting Threshold Autoregressive) là trường hợp của TAR trong đó biến quyết định chế độ là một giá trị trễ của chính chuỗi đang mô hình hóa. Phần lý thuyết trình bày mô hình ngưỡng theo Cryer và Chan, đồng thời sử dụng nhận xét của Hansen về đặc điểm không chuẩn trong suy luận tham số ngưỡng. Các công thức ước lượng, dự báo và chỉ số dưới đây mô tả trực tiếp triển khai thực nghiệm của phương pháp số 4.
-
-Mục tiêu thực nghiệm là kiểm tra liệu cơ chế hai chế độ có cải thiện dự báo một phiên kế tiếp trên dữ liệu ngoài mẫu hay không. Kết quả được so sánh với dự báo return bằng 0, return trung bình, AR tuyến tính. Việc chọn cấu hình được thực hiện trên Train và Validation; Test chỉ phục vụ đánh giá cuối cùng.
-
-\section{Cơ sở lý thuyết của SETAR/TAR}
-
-\subsection{Biến đầu vào và ý nghĩa của thang đo}
-
-Gọi $P_t>0$ là giá đóng cửa của tỷ giá USD/VND ở quan sát thứ $t$, có đơn vị VND cho một USD. Biến đầu vào được định nghĩa bởi
+Với $P_t$ là giá Close tại phiên $t$, tiếp tục dùng định nghĩa log-return của phần chung:
 \begin{equation}
   r_t=100\log\!\left(\frac{P_t}{P_{t-1}}\right).
   \label{eq:setar-return}
 \end{equation}
-Chỉ số $t$ biểu thị thứ tự các quan sát có trong dữ liệu, không phải mọi ngày lịch. Vì vậy, một độ trễ tương ứng một quan sát trước đó; khoảng cuối tuần không được bổ sung bằng các ngày giả tạo. Giá trị $r_t=0{,}1$ biểu thị log-return $0{,}1\%$; sai số trên thang return được diễn giải bằng điểm phần trăm (đpt).
+Giá trị $r_t$ được biểu diễn theo phần trăm; sai số return có đơn vị điểm phần trăm (đpt). Chỉ số $t$ là thứ tự phiên quan sát, không phải mọi ngày lịch.
 
-Chuỗi giá có thể mang xu hướng dài hạn, trong khi return phù hợp hơn để phân tích động học của biến động ngắn hạn. Việc dùng return thay cho mức giá không tự động chứng minh tính dừng toàn cục của một mô hình SETAR đã ước lượng; báo cáo này không thực hiện chứng minh hay kiểm định riêng cho điều kiện đó.
-
-\subsection{Mô hình hai chế độ}
-
-Dạng TAR tổng quát cho phép biến ngưỡng $z_t$ là một biến quan sát được hoặc ngoại sinh. Trong SETAR, chọn $z_t=r_{t-d}$, với $d\geq1$. Mô hình hai chế độ có thể viết
+Thực nghiệm số 4 dùng SETAR hai chế độ có cùng bậc tự hồi quy $p_L=p_H=p$, với hệ số riêng cho từng chế độ:
 \begin{equation}
  r_t=
  \begin{cases}
- a_L+\displaystyle\sum_{j=1}^{p_L}\phi_{L,j}r_{t-j}+\varepsilon_t,
-       & r_{t-d}\leq\gamma,\\[3pt]
- a_H+\displaystyle\sum_{j=1}^{p_H}\phi_{H,j}r_{t-j}+\varepsilon_t,
-       & r_{t-d}>\gamma.
+ a_L+\displaystyle\sum_{j=1}^{p}\phi_{L,j}r_{t-j}+\varepsilon_t,
+       & r_{t-d}\leq\tau,\\[3pt]
+ a_H+\displaystyle\sum_{j=1}^{p}\phi_{H,j}r_{t-j}+\varepsilon_t,
+       & r_{t-d}>\tau.
  \end{cases}
  \label{eq:setar-general}
 \end{equation}
-Trong đó $a_L,a_H$ là hệ số chặn; $\phi_{L,j},\phi_{H,j}$ là hệ số tự hồi quy; $\gamma$ là ngưỡng; $d$ là độ trễ ngưỡng. Triển khai hiện tại dùng $p_L=p_H=p$ để kiểm soát độ phức tạp, nhưng vẫn cho hai chế độ có bộ hệ số độc lập. Độ trễ $d$ có thể lớn hơn $p$.
+Ở đây $d\geq1$ là delay của biến ngưỡng và có thể lớn hơn $p$. Việc dùng cùng bậc AR giúp giới hạn không gian cấu hình; hai chế độ vẫn có hệ số chặn và hệ số AR độc lập. Low và High chỉ mô tả vị trí của $r_{t-d}$ so với $\tau$, không phải nhãn dự báo phiên hiện tại giảm hoặc tăng. Tại điểm bằng ngưỡng, quan sát được gán vào Low.
 
-Ký hiệu Low và High chỉ nói về vị trí của $r_{t-d}$ so với $\gamma$. Chúng không phải nhãn ``phiên tới giảm'' và ``phiên tới tăng''. Chẳng hạn, chế độ Low có thể xuất hiện khi return quá khứ âm đủ lớn, song return được dự báo cho phiên hiện tại vẫn có thể dương. Quy tắc tại điểm bằng ngưỡng là gán vào Low, đúng với điều kiện $r_{t-d}\leq\gamma$.
-
-Để mô hình hóa kỳ vọng có điều kiện, giả sử $\mathbb{E}(\varepsilon_t\mid\mathcal F_{t-1})=0$, trong đó $\mathcal F_{t-1}$ chứa thông tin đã quan sát trước phiên $t$. Ước lượng bình phương tối thiểu không yêu cầu áp đặt phân phối Gaussian cho việc tính hệ số. Ngược lại, giả định phân phối và động học phương sai có ảnh hưởng đến suy luận thống kê và độ tin cậy của khoảng dự báo; các kiểm định phần dư sẽ được trình bày riêng.
-
-\subsection{Ước lượng hệ số và tìm ngưỡng}
-
-Với $p,d,\gamma$ cho trước, đặt
-\[
- \mathbf x_t=(1,r_{t-1},\ldots,r_{t-p})^\mathsf T,
- \qquad
- \boldsymbol\beta_s=(a_s,\phi_{s,1},\ldots,\phi_{s,p})^\mathsf T,
- \quad s\in\{L,H\}.
-\]
-Các tập chỉ số của hai chế độ là
-\[
- \mathcal I_L(\gamma)=\{t:r_{t-d}\leq\gamma\},
- \qquad
- \mathcal I_H(\gamma)=\{t:r_{t-d}>\gamma\}.
-\]
-Hệ số ở mỗi chế độ được ước lượng bằng bình phương tối thiểu có điều kiện:
+Giả sử $\mathbb E(\varepsilon_t\mid\mathcal F_{t-1})=0$. Với $(p,d,\tau)$ cho trước, đặt $\mathbf x_t=(1,r_{t-1},\ldots,r_{t-p})^\mathsf T$ và $\boldsymbol\beta_s=(a_s,\phi_{s,1},\ldots,\phi_{s,p})^\mathsf T$. Hệ số ở mỗi chế độ $s\in\{L,H\}$ được tính bằng bình phương tối thiểu có điều kiện:
 \begin{equation}
  \widehat{\boldsymbol\beta}_s
  =\arg\min_{\boldsymbol\beta_s}
-   \sum_{t\in\mathcal I_s(\gamma)}
-     (r_t-\mathbf x_t^\mathsf T\boldsymbol\beta_s)^2.
+ \sum_{t\in\mathcal I_s(\tau)}(r_t-\mathbf x_t^\mathsf T\boldsymbol\beta_s)^2,
  \label{eq:setar-cls}
 \end{equation}
-Khi ma trận thiết kế có hạng đầy đủ, nghiệm được tính ổn định bằng bộ giải bình phương tối thiểu. Những ứng viên thiếu hạng hoặc có quá ít quan sát ở một chế độ bị loại.
-
-Với từng cặp $(p,d)$, ngưỡng được chọn trong một lưới hữu hạn $\Gamma$:
+trong đó $\mathcal I_s(\tau)$ là tập chỉ số thuộc chế độ tương ứng. Ứng viên thiếu hạng hoặc có quá ít quan sát ở một chế độ bị loại. Với mỗi cặp $(p,d)$, chọn ngưỡng trong lưới hữu hạn $\Gamma$ bằng tổng bình phương phần dư của mẫu ước lượng:
 \begin{equation}
- \widehat\gamma(p,d)=\arg\min_{\gamma\in\Gamma}
-   \left\{
-     \sum_{t\in\mathcal I_L(\gamma)}\widehat\varepsilon_{L,t}^{\,2}
-     +\sum_{t\in\mathcal I_H(\gamma)}\widehat\varepsilon_{H,t}^{\,2}
-   \right\}.
+ \widehat\tau(p,d)=\arg\min_{\tau\in\Gamma}
+ \sum_{s\in\{L,H\}}\sum_{t\in\mathcal I_s(\tau)}\widehat\varepsilon_{s,t}^{\,2}.
  \label{eq:setar-threshold}
 \end{equation}
-Việc tìm ngưỡng cần giới hạn miền ứng viên và yêu cầu đủ quan sát ở từng chế độ để tránh ước lượng thiếu ổn định. Các bậc trễ được chọn bằng sai số dự báo Validation; sau đó ước lượng lại trên Train cộng Validation trước khi đánh giá Test. Các lựa chọn cụ thể của thực nghiệm được trình bày ở Chương~\ref{chap:setar-experiment}.
+Sau đó chọn $(p,d)$ bằng RMSE return trên Validation. Việc giảm SSR trong mẫu không thay thế kiểm định hiệu ứng ngưỡng. Thực nghiệm này chưa kiểm định phi tuyến theo ngưỡng chuyên biệt hoặc tính khoảng tin cậy tham số/ngưỡng; không dùng các kiểm định phần dư để khẳng định đã hoàn tất những bước đó.
+% ===== END COPY A1 / KẾT THÚC PHẦN CẦN CHÉP =====
 
-Theo kết quả lý thuyết của Hansen, phân phối suy luận của ngưỡng có đặc điểm không chuẩn; dưới giả thuyết không có hiệu ứng ngưỡng, tham số ngưỡng không được nhận dạng theo cách thông thường. Vì vậy, việc SETAR có SSR nhỏ hơn AR trong mẫu không đủ để kết luận có phi tuyến có ý nghĩa thống kê. Thực nghiệm này chưa triển khai kiểm định hiệu ứng ngưỡng chuyên biệt và không dùng $F$-test thông thường để đưa ra kết luận đó.
+\setarnote{A2 -- bổ sung vào cuối Phần I, mục 4.4.4, sau công thức chuyển return thành giá. Chép nội dung giữa hai dòng đánh dấu; bỏ ghi chú hướng dẫn này khi ghép.}
+% ===== BEGIN COPY A2 / BẮT ĐẦU PHẦN CẦN CHÉP =====
+\section{Dự báo một bước và hiệu chỉnh smearing trên thang giá}
 
-\subsection{Dự báo một bước và chuyển về tỷ giá}
-
-Tại phiên $t$, chế độ $s_t$ được xác định bằng $r_{t-d}$ đã biết. Dự báo return là
+Trước khi quan sát phiên $t$, chế độ $s_t$ được xác định bằng $r_{t-d}$ đã biết trong $\mathcal F_{t-1}$. Dự báo return là
 \begin{equation}
  \widehat r_{t\mid t-1}
  =\widehat a_{s_t}+\sum_{j=1}^{p}\widehat\phi_{s_t,j}r_{t-j}.
@@ -214,8 +202,38 @@ Phép chuyển trực tiếp $P_{t-1}\exp(\widehat r_{t\mid t-1}/100)$ là dự 
  \label{eq:setar-price}
 \end{equation}
 $\widehat c_s$ chỉ dùng phần dư của mẫu fit tương ứng. Đây là xấp xỉ theo phân phối phần dư kinh nghiệm trong từng chế độ; nó chưa mô hình hóa đầy đủ sự thay đổi phương sai theo thời gian. Bản dự báo plug-in chưa hiệu chỉnh cũng được lưu để đối chiếu.
+% ===== END COPY A2 / KẾT THÚC PHẦN CẦN CHÉP =====
 
-\section{Các chỉ số đánh giá}
+\setarnote{A3 -- thêm tiểu mục khoảng dự báo ngay sau A2 trong Phần I, mục 4.4. Chép nội dung giữa hai dòng đánh dấu; bỏ ghi chú hướng dẫn này khi ghép.}
+% ===== BEGIN COPY A3 / BẮT ĐẦU PHẦN CẦN CHÉP =====
+\section{Khoảng dự báo kinh nghiệm theo chế độ}
+
+Trong mỗi chế độ, lấy phân vị $2{,}5\%$ và $97{,}5\%$ của phần dư trong mẫu fit, ký hiệu $q_{s,0.025}$ và $q_{s,0.975}$. Khoảng dự báo return xấp xỉ là
+\begin{equation}
+ [L_t^r,U_t^r]=
+ [\widehat r_t+q_{s_t,0.025},\widehat r_t+q_{s_t,0.975}].
+ \label{eq:setar-return-interval}
+\end{equation}
+Khoảng trên thang tỷ giá được suy ra bằng phép biến đổi đơn điệu
+\[
+ [L_t^P,U_t^P]=
+ [P_{t-1}\exp(L_t^r/100),\;P_{t-1}\exp(U_t^r/100)].
+\]
+Không nhân thêm hệ số smearing vào hai biên này, vì chúng được xác định từ phân vị phân phối dự báo. Các phân vị không được hiệu chỉnh bằng Test. Khoảng chỉ mô tả bất định innovation kinh nghiệm theo chế độ; chưa bao gồm bất định tham số, ngưỡng và động học phương sai có điều kiện.
+
+Coverage là tỷ lệ $y_t\in[L_t,U_t]$, còn độ rộng trung bình là $n^{-1}\sum_t(U_t-L_t)$. Với mức sai số $\alpha=0{,}05$, interval score được tính bởi
+\begin{align}
+ \mathrm{IS}_{\alpha,t}
+  ={}&(U_t-L_t)
+  +\frac{2}{\alpha}(L_t-y_t)\mathbf1\{y_t<L_t\}\nonumber\\
+  &+\frac{2}{\alpha}(y_t-U_t)\mathbf1\{y_t>U_t\}.
+\end{align}
+Điểm số thấp hơn là tốt hơn vì cân bằng độ rộng và mức độ bỏ sót quan sát.
+% ===== END COPY A3 / KẾT THÚC PHẦN CẦN CHÉP =====
+
+\setarnote{A4 -- bổ sung các định nghĩa còn thiếu vào Phần I, mục 3.4; dùng cùng quy ước khi tổng hợp kết quả. Chép nội dung giữa hai dòng đánh dấu; bỏ ghi chú hướng dẫn này khi ghép.}
+% ===== BEGIN COPY A4 / BẮT ĐẦU PHẦN CẦN CHÉP =====
+\section{Định nghĩa bổ sung và quy ước chỉ số đánh giá}
 
 \subsection{Sai số điểm và chuẩn so sánh}
 
@@ -257,76 +275,15 @@ Với tỷ giá, benchmark của rRMSE là giá phiên trước trên đúng t�
 \end{equation}
 Có ba nhãn: giảm, không đổi và tăng. Báo cáo cũng trình bày DA chỉ trên các phiên có mức thay đổi giá thực tế khác 0 và DA cân bằng, là trung bình recall của ba lớp thực tế. Naive luôn dự báo không đổi; vì vậy tỷ lệ khớp các phiên không đổi không phải năng lực dự báo hướng tăng hoặc giảm.
 
-\subsection{Khoảng dự báo và độ chắc chắn của chênh lệch sai số}
-
-Trong mỗi chế độ, lấy phân vị $2{,}5\%$ và $97{,}5\%$ của phần dư trong mẫu fit, ký hiệu $q_{s,0.025}$ và $q_{s,0.975}$. Khoảng dự báo return xấp xỉ là
-\[
- [L_t^r,U_t^r]=
- [\widehat r_t+q_{s_t,0.025},\widehat r_t+q_{s_t,0.975}].
-\]
-Khoảng trên thang tỷ giá được suy ra bằng phép biến đổi đơn điệu
-\[
- [L_t^P,U_t^P]=
- [P_{t-1}\exp(L_t^r/100),\;P_{t-1}\exp(U_t^r/100)].
-\]
-Không nhân thêm hệ số smearing vào hai biên này, vì chúng được xác định từ phân vị phân phối dự báo. Các phân vị không được hiệu chỉnh bằng Test. Khoảng chỉ mô tả bất định innovation kinh nghiệm theo chế độ; chưa bao gồm bất định tham số, ngưỡng và động học phương sai có điều kiện.
-
-Coverage là tỷ lệ $y_t\in[L_t,U_t]$, còn độ rộng trung bình là $n^{-1}\sum_t(U_t-L_t)$. Với mức sai số $\alpha=0{,}05$, interval score được tính bởi
-\begin{align}
- \mathrm{IS}_{\alpha,t}
-  ={}&(U_t-L_t)
-  +\frac{2}{\alpha}(L_t-y_t)\mathbf1\{y_t<L_t\}\nonumber\\
-  &+\frac{2}{\alpha}(y_t-U_t)\mathbf1\{y_t>U_t\}.
-\end{align}
-Điểm số thấp hơn là tốt hơn vì cân bằng độ rộng và mức độ bỏ sót quan sát.
-
 Để đánh giá độ chắc chắn của chênh lệch sai số, dùng paired circular moving-block bootstrap trên chuỗi chênh lệch loss SETAR trừ benchmark. Cách lấy mẫu theo block giữ một phần phụ thuộc thời gian giữa các sai số. Các khoảng tin cậy là thông tin mô tả theo giao thức này, chưa có khảo sát độ nhạy theo block và chưa hiệu chỉnh kiểm định nhiều lần.
+% ===== END COPY A4 / KẾT THÚC PHẦN CẦN CHÉP =====
 
 \chapter{THỰC NGHIỆM SETAR/TAR TRÊN TỶ GIÁ USD/VND}
 \label{chap:setar-experiment}
 
-Chương này áp dụng mô hình và các chỉ số được định nghĩa ở Chương~\ref{chap:setar-theory} cho dữ liệu USD/VND. Sau phần dữ liệu và giao thức đánh giá, chương trình bày bảng tổng hợp toàn bộ kết quả trước, rồi mới phân tích chi tiết việc chọn cấu hình, sai số dự báo, dự báo hướng, khoảng dự báo và chẩn đoán. Các bảng được lấy từ kết quả đã chạy; không điều chỉnh cấu hình theo Test.
-
-\section{Dữ liệu và thiết kế thực nghiệm}
-
-\subsection{Dữ liệu, chia tập và kiểm soát thông tin tương lai}
-
-Dữ liệu gồm 2\,784 quan sát giá từ 04/01/2016 đến 31/08/2026. Dữ liệu return còn 2\,783 quan sát vì phiên đầu chưa có giá trước đó để tính theo \eqref{eq:setar-return}. Các tập được chia theo thời gian như Bảng~\ref{tab:setar-splits}, không xáo trộn ngẫu nhiên.
-
-\begin{table}[htbp]
-\centering\small
-\caption{Thiết kế chia dữ liệu theo thời gian}
-\label{tab:setar-splits}
-\begin{tabular}{lrrr}
-\toprule
-Tập & Thời gian & Giá & Return \\
-\midrule
-Train & 04/01/2016--31/12/2024 & 2\,347 & 2\,346 \\
-Validation & 01/01/2025--31/12/2025 & 262 & 262 \\
-Test & 01/01/2026--31/08/2026 & 175 & 175 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Các cột ngày và giá được chuẩn hóa; giá và log-return được đối chiếu theo ngày, gồm cả return tại ranh giới giữa các tập. Không có giá đóng cửa thiếu, không dương hoặc ngày trùng trong dữ liệu đưa vào mô hình. Có 569 dòng bị gắn cờ không thỏa logic OHLC: 542 dòng Train và 27 dòng Validation. Các dòng này được giữ nguyên, vì phân tích sử dụng Close; kết quả do đó vẫn phụ thuộc chất lượng Close của nguồn dữ liệu. Không biến đổi hay sửa giá chỉ để cải thiện kết quả dự báo.
-
-Mẫu Train có 2\,346 return, mẫu Train cộng Validation có 2\,608 return. Do mốc lag chung bằng 10, số quan sát thực sự tham gia fit lần lượt là 2\,336 và 2\,598. Test gồm 175 dự báo, mỗi dự báo được tạo trước khi quan sát thực tế của phiên tương ứng được sử dụng.
-
-\subsection{Các mô hình đối chứng}
-
-Các đối chứng trên thang return gồm: (i) Zero, $\widehat r_t=0$; (ii) Mean, $\widehat r_t=\bar r_{\mathrm{fit}}$; và (iii) AR tuyến tính, có bậc được chọn trên Validation từ $1$ đến $10$. Zero tương ứng dự báo tỷ giá Naive $\widehat P_t=P_{t-1}$. Mean và AR sử dụng hiệu chỉnh chuyển thang bằng phân phối phần dư của mẫu fit khi tính dự báo giá chính.
-
-\subsection{Không gian cấu hình và giao thức ước lượng}
-
-Triển khai dùng tối đa 71 ngưỡng lấy theo phân vị từ $15\%$ đến $85\%$ của biến ngưỡng trong mẫu fit; các giá trị trùng được gộp. Mỗi chế độ cần ít nhất
-\[
- n_s\geq\max\{\lceil0{,}15n_{\mathrm{fit}}\rceil,\;5(p+1)\}.
-\]
-Đây là tìm kiếm có giới hạn trên lưới đã định nghĩa, không phải khẳng định đã tìm tối ưu trên toàn bộ trục số thực. Các ứng viên sử dụng cùng mốc bắt đầu bằng 10 để so sánh trên cùng mẫu sau khi bỏ các quan sát cần cho lag.
-
-Hệ số và ngưỡng được học từ Train. Sau đó, $(p,d)$ được chọn bằng RMSE dự báo trên Validation. BIC trong bảng tìm kiếm chỉ là thông tin mô tả trong mẫu, không thay thế tiêu chí chọn ngoài mẫu. Sau khi cố định $(p,d)$, mô hình được refit trên Train cộng Validation; bước này được phép cập nhật ngưỡng và hệ số bằng mẫu fit mới.
-
-Việc so sánh chênh lệch loss sử dụng 2\,000 mẫu bootstrap, độ dài block bằng 5 và seed 20261010; thống kê HAC tham khảo sử dụng bandwidth bằng 5.
+\setarnote{B -- thay toàn bộ nội dung Phần II, mục 7.4; đánh số lại các đề mục theo mục 7.4. Chép nội dung giữa hai dòng đánh dấu; bỏ ghi chú hướng dẫn này khi ghép.}
+% ===== BEGIN COPY B / BẮT ĐẦU PHẦN CẦN CHÉP =====
+Phương pháp số 4 được triển khai dưới dạng SETAR hai chế độ trên log-return, đánh giá dự báo tỷ giá trên cùng các phiên của giao thức chung. Bảng tổng hợp toàn bộ kết quả được trình bày trước; các mục tiếp theo giải thích thiết kế, lựa chọn cấu hình và từng nhóm kết quả. Cấu hình không được điều chỉnh theo Test.
 
 \section{Bảng tổng hợp toàn bộ chỉ số đánh giá}
 
@@ -438,6 +395,32 @@ Tỷ giá / tuyệt đối / AR & \multicolumn{5}{L{10.3cm}}{TB $0{,}584914$; CI
 
 Các kiểm định và p-value chỉ mang tính chẩn đoán, chưa hiệu chỉnh cho chọn ngưỡng hoặc nhiều lần kiểm định. CI bootstrap và HAC dùng các giả định khác nhau và chưa được khảo sát độ nhạy. Báo cáo chưa thực hiện kiểm định hiệu ứng ngưỡng chuyên biệt; không dùng bảng này để khẳng định mọi kiểm định lý thuyết của SETAR đã hoàn tất.
 
+\FloatBarrier
+
+\section{Dữ liệu và thiết kế riêng của phương pháp số 4}
+
+\subsection{Sử dụng dữ liệu và giao thức chung}
+
+Phương pháp số 4 dùng các tập log-return đã chuẩn bị ở phần chung: Train gồm 2\,346 quan sát trong giai đoạn 2016--2024, Validation gồm 262 quan sát năm 2025 và Test gồm 175 quan sát từ tháng 1 đến tháng 8/2026. Giá và return được ghép theo ngày; return ở ranh giới hai tập sử dụng giá phiên ngay trước đó. Các thao tác tiền xử lý, EDA và kiểm định đầu vào được trình bày ở các mục chung, không thực hiện lại bằng dữ liệu Test để lựa chọn mô hình.
+
+Để so sánh các ứng viên trên cùng mẫu, dùng mốc bắt đầu chung bằng 10. Số quan sát thực sự tham gia fit là 2\,336 trên Train và 2\,598 trên Train cộng Validation. Test có đủ 175 dự báo một bước. Sau khi ghi dự báo của phiên $t$, return thực tế của phiên đó mới được thêm vào lịch sử cho phiên tiếp theo; tham số giữ cố định trong Test.
+
+\subsection{Các mô hình đối chứng}
+
+Các đối chứng trên thang return gồm: (i) Zero, $\widehat r_t=0$; (ii) Mean, $\widehat r_t=\bar r_{\mathrm{fit}}$; và (iii) AR tuyến tính, chọn bậc trên Validation trong khoảng từ 1 đến 10. Zero tương ứng với Random Walk/Naive trên giá: $\widehat P_t=P_{t-1}$. Mean, AR và SETAR sử dụng hiệu chỉnh smearing từ phần dư của mẫu fit cho dự báo giá chính. AR chỉ là đối chứng tuyến tính cho cơ chế ngưỡng của phương pháp số 4, không phải kết quả của mô hình State Space số 3.
+
+\subsection{Không gian cấu hình và giao thức ước lượng}
+
+Xét $p\in\{1,\ldots,10\}$ và $d\in\{1,\ldots,5\}$, tương ứng 50 cặp $(p,d)$. Với mỗi cặp, dùng tối đa 71 ngưỡng lấy theo phân vị từ $15\%$ đến $85\%$ của biến ngưỡng trong mẫu fit; các giá trị trùng được gộp. Mỗi chế độ cần ít nhất
+\[
+ n_s\geq\max\{\lceil0{,}15n_{\mathrm{fit}}\rceil,\;5(p+1)\}.
+\]
+Các ứng viên thiếu hạng bị loại. Đây là tìm kiếm trên một lưới có giới hạn, không phải tối ưu trên toàn bộ trục số thực.
+
+Hệ số và ngưỡng được học từ Train, trong đó ngưỡng tối thiểu hóa SSR cho từng cặp $(p,d)$. Chọn $(p,d)$ bằng RMSE return trên Validation. BIC trong bảng tìm kiếm là thông tin mô tả, không thay thế tiêu chí chọn ngoài mẫu. Sau khi cố định $(p,d)$, refit trên Train cộng Validation, cho phép cập nhật ngưỡng và hệ số bằng mẫu fit mới rồi khóa chúng trước Test. Dự báo giá dùng smearing theo chế độ như phần lý thuyết; các phân vị phần dư cho khoảng dự báo không được hiệu chỉnh bằng Test.
+
+So sánh chênh lệch loss dùng 2\,000 mẫu paired circular moving-block bootstrap, độ dài block 5 và seed 20261010; thống kê HAC tham khảo dùng bandwidth 5. Các cách suy luận này chưa được khảo sát độ nhạy và không thay thế kiểm định hiệu ứng ngưỡng chuyên biệt.
+
 \section{Kết quả chọn cấu hình và ước lượng}
 
 \subsection{Lựa chọn trên Validation}
@@ -450,7 +433,7 @@ Có 50 cặp $(p,d)$ SETAR và 10 bậc AR tuyến tính được so sánh. Mỗ
 \label{tab:setar-grid}
 \begin{tabular}{rrrrr}
 \toprule
-$p$ & $d$ & $\widehat\gamma$ (đpt) & RMSE (đpt) & MAE (đpt) \\
+$p$ & $d$ & $\widehat\tau$ (đpt) & RMSE (đpt) & MAE (đpt) \\
 \midrule
 6 & 4 & $-0{,}039392$ & $0{,}165605$ & $0{,}100953$ \\
 10 & 4 & $-0{,}008533$ & $0{,}165879$ & $0{,}101341$ \\
@@ -462,7 +445,7 @@ $p$ & $d$ & $\widehat\gamma$ (đpt) & RMSE (đpt) & MAE (đpt) \\
 \end{tabular}
 \end{table}
 
-Cấu hình được chọn là $p=6$, $d=4$, với ngưỡng Train $\widehat\gamma=-0{,}03939218$ đpt. RMSE Validation của SETAR là $0{,}165605$ đpt, thấp hơn Zero ($0{,}168590$) khoảng $1{,}77\%$ và thấp hơn AR được chọn ($0{,}167174$). Tuy nhiên, MAE SETAR trên Validation bằng $0{,}100953$, cao hơn MAE Zero $0{,}097492$. Do đó, lợi ích xuất hiện ở tiêu chí RMSE dùng để chọn cấu hình, không nhất quán trên mọi chỉ số. Khoảng cách giữa các ứng viên SETAR đứng đầu cũng nhỏ.
+Cấu hình được chọn là $p=6$, $d=4$, với ngưỡng Train $\widehat\tau=-0{,}03939218$ đpt. RMSE Validation của SETAR là $0{,}165605$ đpt, thấp hơn Zero ($0{,}168590$) khoảng $1{,}77\%$ và thấp hơn AR được chọn ($0{,}167174$). Tuy nhiên, MAE SETAR trên Validation bằng $0{,}100953$, cao hơn MAE Zero $0{,}097492$. Do đó, lợi ích xuất hiện ở tiêu chí RMSE dùng để chọn cấu hình, không nhất quán trên mọi chỉ số. Khoảng cách giữa các ứng viên SETAR đứng đầu cũng nhỏ.
 
 \setarfigure{01_validation_grid.png}{RMSE return trên Validation cho các cặp bậc $p$ và độ trễ ngưỡng $d$; ô đánh dấu là cấu hình được chọn.}{fig:setar-grid}
 \setarfigure{02_threshold_profile.png}{Hồ sơ SSR theo ngưỡng của cấu hình đã chọn trên Train và trên mẫu refit Train cộng Validation.}{fig:setar-threshold}
@@ -470,7 +453,7 @@ Cấu hình được chọn là $p=6$, $d=4$, với ngưỡng Train $\widehat\ga
 
 \subsection{Mô hình cuối sau refit}
 
-Sau refit, bậc và độ trễ vẫn giữ $p=6$, $d=4$, còn ngưỡng là $\widehat\gamma=-0{,}03880847$ đpt. Trong 2\,598 quan sát fit, Low có 624 quan sát và High có 1\,974 quan sát. Ngưỡng dịch chuyển nhẹ so với lần fit trên Train, phù hợp việc mẫu ước lượng đã được mở rộng đến hết năm 2025.
+Sau refit, bậc và độ trễ vẫn giữ $p=6$, $d=4$, còn ngưỡng là $\widehat\tau=-0{,}03880847$ đpt. Trong 2\,598 quan sát fit, Low có 624 quan sát và High có 1\,974 quan sát. Ngưỡng dịch chuyển nhẹ so với lần fit trên Train, phù hợp việc mẫu ước lượng đã được mở rộng đến hết năm 2025.
 
 \begin{table}[htbp]
 \centering\small
@@ -745,10 +728,60 @@ Chênh lệch absolute loss so với AR có CI95\% $[0{,}1428;1{,}0437]$, hoàn 
 \setarfigure{06_cumulative_loss.png}{Chênh lệch loss return tích lũy giữa SETAR và các baseline; giá trị dương nghĩa SETAR có sai số cao hơn.}{fig:setar-loss}
 \FloatBarrier
 
-\section*{Thông tin tái lập}
+\subsection*{Thông tin tái lập của phương pháp số 4}
 Các kết quả định lượng được đối chiếu tại commit
 \texttt{0043b0d} của kho \texttt{tongtu2204/topic\_2}.
-Báo cáo này gồm hai chương, chỉ trình bày phương pháp số 4 và các đối chứng Zero/Naive, Mean, AR trong cùng giao thức. Dữ liệu đã xử lý được giữ trong \path{data/processed/}; phiên bản repo hiện tại chạy độc lập từ các tập này. Notebook thực nghiệm là \path{code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb}; các kết quả nằm trong \path{results/model_4_setar_tar/}, hình trong \path{figures/model_4_setar_tar/}. Tám kiểm tra căn chỉnh lag, quy tắc ngưỡng và việc không sử dụng trước thông tin đã đạt; các cell code của notebook cũng đã được chạy. Báo cáo này là bản nguồn LaTeX tạm, chưa được biên dịch hay kiểm tra dàn trang bằng PDF.
+Phần đóng góp này trình bày phương pháp số 4 và các đối chứng Zero/Naive, Mean, AR trong cùng giao thức. Dữ liệu đã xử lý được giữ trong \path{data/processed/}; phiên bản repo hiện tại chạy độc lập từ các tập này. Notebook thực nghiệm là \path{code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb}; các kết quả nằm trong \path{results/model_4_setar_tar/}, hình trong \path{figures/model_4_setar_tar/}. Tám kiểm tra căn chỉnh lag, quy tắc ngưỡng và việc không sử dụng trước thông tin đã đạt; các cell code của notebook cũng đã được chạy. Báo cáo này là bản nguồn LaTeX tạm, chưa được biên dịch hay kiểm tra dàn trang bằng PDF.
+% ===== END COPY B / KẾT THÚC PHẦN CẦN CHÉP =====
 
-% ==================== END REPORT ====================
+\setarnote{C -- điền đúng hàng SETAR/TAR của Phần II, mục 8.4; không thêm thành một bảng kết quả riêng trong bản cuối. Chép nội dung giữa hai dòng đánh dấu; bỏ ghi chú hướng dẫn này khi ghép.}
+% ===== BEGIN COPY C / BẮT ĐẦU PHẦN CẦN CHÉP =====
+\section*{Hàng SETAR/TAR bổ sung vào bảng tổng hợp năm mô hình}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Số liệu để điền hàng phương pháp số 4 tại mục 8.4 của báo cáo chung}
+\label{tab:setar-merge-row}
+\begin{tabular}{lrrrr}
+\toprule
+Mô hình & Validation RMSE & Test MAE & Test RMSE & Rel. RMSE \\
+\midrule
+4. SETAR / TAR & $42{,}473124$ & $19{,}483811$ & $30{,}868815$ & $1{,}027132$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ba chỉ số sai số ở hàng trên được tính trên giá theo đơn vị VND/USD, với dự báo điểm SETAR đã hiệu chỉnh smearing. Relative RMSE lấy Random Walk trên cùng 175 phiên Test làm chuẩn. SETAR có RMSE thấp hơn Naive khoảng $1{,}80\%$ trên Validation nhưng cao hơn Naive khoảng $2{,}71\%$ trên Test; chưa thể kết luận mô hình cải thiện dự báo ngoài mẫu.
+
+% Hàng LaTeX để thay đúng hàng SETAR đang ghi "Chờ mô hình":
+% 4. SETAR / TAR & $42{,}473124$ & $19{,}483811$ & $30{,}868815$ & $1{,}027132$ \\
+% ===== END COPY C / KẾT THÚC PHẦN CẦN CHÉP =====
+
+\setarnote{D -- bổ sung vào Phụ lục A, B và cập nhật mô tả phạm vi của phần chung. Chép nội dung giữa hai dòng đánh dấu; bỏ ghi chú hướng dẫn này khi ghép.}
+% ===== BEGIN COPY D / BẮT ĐẦU PHẦN CẦN CHÉP =====
+\section*{Bổ sung danh sách tệp và trạng thái thực hiện}
+
+\textbf{Phụ lục A -- thêm các tệp của phương pháp số 4:}
+\begin{itemize}
+  \item \path{code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb}: chọn cấu hình, refit, dự báo một bước và đánh giá SETAR/TAR.
+  \item \path{results/model_4_setar_tar/selected_models.json}, \path{validation_grid.csv}, \path{threshold_search_train.csv}, \path{threshold_search_refit.csv}: cấu hình và quá trình tìm ngưỡng; các tên rút gọn đều nằm trong cùng thư mục kết quả.
+  \item \path{results/model_4_setar_tar/coefficients.csv}, \path{regime_summary.csv}: hệ số và thống kê từng chế độ.
+  \item \path{results/model_4_setar_tar/forecasts.csv}, \path{forecast_metrics.csv}, \path{price_forecast_metrics.csv}, \path{setar_interval_metrics.csv}: dự báo theo phiên, chỉ số return/giá và khoảng dự báo.
+  \item \path{results/model_4_setar_tar/residuals.csv}, \path{residual_diagnostics.csv}, \path{test_forecast_error_diagnostics.csv}, \path{paired_loss_comparisons.csv}: phần dư, chẩn đoán và chênh lệch loss.
+  \item \path{results/model_4_setar_tar/data_audit.csv}, \path{run_environment.json}: đối chiếu dữ liệu và môi trường chạy.
+  \item \path{figures/model_4_setar_tar/}: các hình lựa chọn cấu hình, dự báo, chế độ, sai số, khoảng dự báo và chẩn đoán của phương pháp số 4.
+\end{itemize}
+
+\textbf{Phụ lục B -- thay hàng trạng thái của phương pháp số 4:}
+\begin{quote}
+Mô hình 4: SETAR/TAR -- Đã thực nghiệm trên Train/Validation/Test; đã có bảng tổng hợp, hệ số, dự báo, khoảng dự báo và chẩn đoán -- Thành viên 4.
+\end{quote}
+Kiểm định hiệu ứng ngưỡng chuyên biệt, khoảng tin cậy tham số/ngưỡng và khảo sát độ nhạy chưa thực hiện; không ghi là đã hoàn tất mọi kiểm định lý thuyết của SETAR.
+
+\textbf{Cập nhật câu mô tả phạm vi ở phần Tóm tắt và đầu Phần II:}
+\begin{quote}
+Báo cáo trình bày phần chung từ notebook 01--05 và bổ sung thực nghiệm phương pháp số 4 SETAR/TAR từ notebook 08. Các mô hình còn lại được tổng hợp khi có kết quả tương ứng đã xác nhận theo giao thức chung.
+\end{quote}
+% ===== END COPY D / KẾT THÚC PHẦN CẦN CHÉP =====
+
 \end{document}
