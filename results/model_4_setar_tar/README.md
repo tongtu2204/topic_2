@@ -32,21 +32,24 @@ Mô hình cuối: p=6, d=4, gamma=-0.03880847; Low=624, High=1974 quan sát fit.
 Return MAE/RMSE có đơn vị điểm phần trăm. Relative RMSE so với Zero return. MASE return dùng sai số persistence return trong mẫu huấn luyện, nên MASE<1 không đồng nghĩa thắng Zero trên Test.
 MAPE/sMAPE return để trống vì target có 0, gần 0 và giá trị âm; không thay 0 bằng epsilon để tạo chỉ số đẹp.
 
-## Đánh giá tỷ giá và đối chiếu mô hình 3
+## Đánh giá tỷ giá
 
 Dự báo giá chính = P_(t-1) exp(r_hat/100) × mean(exp(residual/100)) của chế độ tương ứng. Hệ số smearing chỉ dùng residual của mẫu fit, nhằm hiệu chỉnh phép đổi thang phi tuyến. Forecast plug-in chưa hiệu chỉnh vẫn được lưu riêng trong forecasts.csv.
 
-| Model                       |       MAE |      RMSE |   MAPE_percent |   sMAPE_percent |     MASE |   DA_all_percent |   Relative_RMSE_vs_Naive |
-|:----------------------------|----------:|----------:|---------------:|----------------:|---------:|-----------------:|-------------------------:|
-| Zero                        | 18.562857 | 30.053405 |       0.070899 |        0.070908 | 1.016289 |        10.285714 |                 1.000000 |
-| Mean                        | 18.911548 | 30.168630 |       0.072234 |        0.072238 | 1.035379 |        40.000000 |                 1.003834 |
-| AR                          | 18.898896 | 30.406055 |       0.072188 |        0.072196 | 1.034686 |        49.714286 |                 1.011734 |
-| SETAR                       | 19.483811 | 30.868815 |       0.074419 |        0.074430 | 1.066710 |        48.571429 |                 1.027132 |
-| State Space (saved model 3) | 18.567821 | 30.054512 |       0.070918 |        0.070926 | 1.016560 |        40.000000 |                 1.000037 |
+| Split      | Model   |       MAE |      RMSE |   MAPE_percent |   sMAPE_percent |     MASE |   DA_all_percent |   Relative_RMSE_vs_Naive |
+|:-----------|:--------|----------:|----------:|---------------:|----------------:|---------:|-----------------:|-------------------------:|
+| validation | Zero    | 25.187023 | 43.252829 |       0.097463 |        0.097492 | 1.439890 |         8.396947 |                 1.000000 |
+| validation | Mean    | 25.289077 | 43.174200 |       0.097861 |        0.097884 | 1.445724 |        47.328244 |                 0.998182 |
+| validation | AR      | 25.941585 | 42.895409 |       0.100420 |        0.100433 | 1.483027 |        42.748092 |                 0.991736 |
+| validation | SETAR   | 26.071270 | 42.473124 |       0.100942 |        0.100956 | 1.490440 |        43.893130 |                 0.981973 |
+| test       | Zero    | 18.562857 | 30.053405 |       0.070899 |        0.070908 | 1.016289 |        10.285714 |                 1.000000 |
+| test       | Mean    | 18.911548 | 30.168630 |       0.072234 |        0.072238 | 1.035379 |        40.000000 |                 1.003834 |
+| test       | AR      | 18.898896 | 30.406055 |       0.072188 |        0.072196 | 1.034686 |        49.714286 |                 1.011734 |
+| test       | SETAR   | 19.483811 | 30.868815 |       0.074419 |        0.074430 | 1.066710 |        48.571429 |                 1.027132 |
 
 RMSE SETAR cải thiện so với Naive trên Test: -2.7132% (âm nghĩa là kém hơn). Đây là kết quả ngoài mẫu của cấu hình đã chọn, không tiếp tục chỉnh theo Test.
 MASE giá dùng mean(|P_t−P_(t-1)|) trên toàn bộ mẫu giá fit; Relative RMSE dùng Naive trên đúng Test. Hai chuẩn so sánh khác nhau.
-Mô hình 3 được đọc từ forecast đã lưu, kiểm tra trùng ngày và giá thật rồi tính lại cùng bộ chỉ số; không huấn luyện lại mô hình 3.
+Đối chứng gồm Zero/Naive, Mean và AR tuyến tính, đều thuộc giao thức đánh giá của thí nghiệm SETAR/TAR.
 
 ## Khoảng dự báo 95%
 
@@ -81,4 +84,4 @@ Hoặc Run All trong code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb. Chạy từ thư
 ## Tài liệu
 
 - Cryer & Chan, Time Series Analysis: With Applications in R, 2nd ed., Springer, 2008 (mô hình ngưỡng/phi tuyến).
-- Hansen (1997), Inference in TAR Models, Studies in Nonlinear Dynamics and Econometrics, 2(1), 1–14. https://users.ssc.wisc.edu/~behansen/papers/snde_97.html (phân phối suy luận ngưỡng không chuẩn).
+- Hansen (1997), Inference in TAR Models, Studies in Nonlinear Dynamics and Econometrics, 2(1). https://users.ssc.wisc.edu/~behansen/papers/snde_97.html (phân phối suy luận ngưỡng không chuẩn).

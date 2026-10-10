@@ -18,16 +18,8 @@ from setar_figures_usd_vnd import make_figures
 
 def extra_figures(base, evaluation):
     out = base/"figures"/"model_4_setar_tar"
-    scores = evaluation.get("cross_model_metrics", evaluation["price_metrics"].query("Split == 'test'"))
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
-    labels = scores.Model.str.replace(" (saved model 3)", "", regex=False)
-    for ax, metric in zip(axes, ("RMSE", "MAE")):
-        bars = ax.bar(labels, scores[metric], color=["#64748b", "#0f766e", "#2563eb", "#b45309", "#7c3aed"][:len(scores)])
-        ax.bar_label(bars, fmt="%.3f", padding=3)
-        ax.set(title=f"USD/VND Test 2026 - {metric}", ylabel="VND per USD", ylim=(0, scores[metric].max()*1.2))
-        ax.tick_params(axis="x", rotation=20)
-        ax.grid(axis="y", alpha=.2)
-    fig.tight_layout(); fig.savefig(out/"10_cross_model_price_comparison.png", dpi=180); plt.close(fig)
+    scores = evaluation["price_metrics"].query("Split == 'test'")
+    labels = scores.Model
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     for ax, metric, title in zip(axes, ("DA_all_percent", "DA_nonzero_actual_percent"), ("Down / flat / up", "Actual nonzero moves only")):
         bars = ax.bar(labels, scores[metric], color="#2563eb")
@@ -68,12 +60,12 @@ def write_note(base, selected, evaluation, config):
              evaluation["metrics"][["Split", "Model", "N", "MAE", "RMSE", "MASE", "R2_out_of_sample", "DA_all_percent", "DA_nonzero_actual_percent", "Relative_RMSE_vs_Naive"]].to_markdown(index=False, floatfmt=".6f"), "",
              "Return MAE/RMSE có đơn vị điểm phần trăm. Relative RMSE so với Zero return. MASE return dùng sai số persistence return trong mẫu huấn luyện, nên MASE<1 không đồng nghĩa thắng Zero trên Test.",
              "MAPE/sMAPE return để trống vì target có 0, gần 0 và giá trị âm; không thay 0 bằng epsilon để tạo chỉ số đẹp.", "",
-             "## Đánh giá tỷ giá và đối chiếu mô hình 3", "",
+             "## Đánh giá tỷ giá", "",
              "Dự báo giá chính = P_(t-1) exp(r_hat/100) × mean(exp(residual/100)) của chế độ tương ứng. Hệ số smearing chỉ dùng residual của mẫu fit, nhằm hiệu chỉnh phép đổi thang phi tuyến. Forecast plug-in chưa hiệu chỉnh vẫn được lưu riêng trong forecasts.csv.", "",
-             evaluation.get("cross_model_metrics", evaluation["price_metrics"])[["Model", "MAE", "RMSE", "MAPE_percent", "sMAPE_percent", "MASE", "DA_all_percent", "Relative_RMSE_vs_Naive"]].to_markdown(index=False, floatfmt=".6f"), "",
+             evaluation["price_metrics"][["Split", "Model", "MAE", "RMSE", "MAPE_percent", "sMAPE_percent", "MASE", "DA_all_percent", "Relative_RMSE_vs_Naive"]].to_markdown(index=False, floatfmt=".6f"), "",
              f"RMSE SETAR cải thiện so với Naive trên Test: {delta:.4f}% (âm nghĩa là kém hơn). Đây là kết quả ngoài mẫu của cấu hình đã chọn, không tiếp tục chỉnh theo Test.",
              "MASE giá dùng mean(|P_t−P_(t-1)|) trên toàn bộ mẫu giá fit; Relative RMSE dùng Naive trên đúng Test. Hai chuẩn so sánh khác nhau.",
-             "Mô hình 3 được đọc từ forecast đã lưu, kiểm tra trùng ngày và giá thật rồi tính lại cùng bộ chỉ số; không huấn luyện lại mô hình 3.", "",
+             "Đối chứng gồm Zero/Naive, Mean và AR tuyến tính, đều thuộc giao thức đánh giá của thí nghiệm SETAR/TAR.", "",
              "## Khoảng dự báo 95%", "",
              evaluation["interval_metrics"].to_markdown(index=False, floatfmt=".6f"), "",
              "Khoảng lấy phân vị 2,5% và 97,5% của residual mẫu fit theo từng chế độ. Đánh giá coverage, độ rộng và interval score. Khoảng xấp xỉ, chưa bao gồm bất định tham số và chưa mô hình hóa ARCH; không hiệu chỉnh bằng Test.", "",
@@ -88,7 +80,7 @@ def write_note(base, selected, evaluation, config):
              "Hoặc Run All trong code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb. Chạy từ thư mục gốc repo hoặc thư mục code. Kết quả nằm ở results/model_4_setar_tar và figures/model_4_setar_tar.", "",
              "## Tài liệu", "",
              "- Cryer & Chan, Time Series Analysis: With Applications in R, 2nd ed., Springer, 2008 (mô hình ngưỡng/phi tuyến).", 
-             "- Hansen (1997), Inference in TAR Models, Studies in Nonlinear Dynamics and Econometrics, 2(1), 1–14. https://users.ssc.wisc.edu/~behansen/papers/snde_97.html (phân phối suy luận ngưỡng không chuẩn).", ""]
+             "- Hansen (1997), Inference in TAR Models, Studies in Nonlinear Dynamics and Econometrics, 2(1). https://users.ssc.wisc.edu/~behansen/papers/snde_97.html (phân phối suy luận ngưỡng không chuẩn).", ""]
     out.write_text("\n".join(lines), encoding="utf-8")
     return out
 
@@ -111,7 +103,7 @@ def run_experiment(base=None, verbose=True):
     if verbose:
         print(audit.to_string(index=False))
         print("\nTEST RETURN"); print(evaluation["metrics"].query("Split == 'test'").to_string(index=False))
-        print("\nTEST PRICE"); print(evaluation.get("cross_model_metrics", evaluation["price_metrics"]).to_string(index=False))
+        print("\nTEST PRICE"); print(evaluation["price_metrics"].query("Split == 'test'").to_string(index=False))
         print("\nINTERVALS"); print(evaluation["interval_metrics"].to_string(index=False))
         print(f"\nResults: {report}")
     return splits, selected, grid, profiles, evaluation, tables, config, extras

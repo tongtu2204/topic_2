@@ -139,7 +139,7 @@ def make_figures(base, splits, selected, grid, profiles, evaluation, tables):
         ax.set_ylim(0, subset[metric].max()*1.18)
         ax.grid(axis="y", alpha=.2)
         ax.set_axisbelow(True)
-    fig.suptitle("Common price-scale metrics for cross-model comparison", fontweight="bold")
+    fig.suptitle("SETAR and baseline price forecast metrics", fontweight="bold")
     save(fig, "08_common_price_metrics.png")
 
     fig, ax = plt.subplots(figsize=(12, 5.5))

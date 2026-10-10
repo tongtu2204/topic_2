@@ -182,17 +182,6 @@ def enrich_evaluation(base, splits, selected, evaluation):
                       interval_metrics=pd.DataFrame(interval_rows), predictions=predictions,
                       test_diagnostics=pd.DataFrame(diag_rows),
                       loss_comparisons=loss_comparisons(predictions[predictions.Split == "test"]))
-    # Same-date comparison with previously saved model 3; recompute all metrics.
-    ss_file = Path(base)/"results"/"model_3_state_space"/"06_test_predictions_state_space.csv"
-    if ss_file.exists():
-        ss = pd.read_csv(ss_file, parse_dates=["Date"])
-        frame = predictions[predictions.Split == "test"]
-        if not np.array_equal(ss.Date.to_numpy(), frame.Date.to_numpy()) or not np.array_equal(ss.Actual_Close.to_numpy(), frame.actual_close.to_numpy()):
-            raise ValueError("State Space comparison has different dates/actual values")
-        row = {"Split": "test", "Model": "State Space (saved model 3)", "Point_forecast": "Gaussian_mean",
-               **full_metrics(frame.actual_close, ss.Predicted_Price, history_price, frame.previous_close, previous=frame.previous_close, is_price=True)}
-        row.update(interval_scores(ss.Actual_Close, ss.Lower_95, ss.Upper_95))
-        evaluation["cross_model_metrics"] = pd.concat([evaluation["price_metrics"].query("Split == 'test'"), pd.DataFrame([row])], ignore_index=True)
     return evaluation
 
 
@@ -200,8 +189,6 @@ def save_extra(base, splits, audit, evaluation, config):
     output = Path(base)/"results"/"model_4_setar_tar"
     extras = {"data_audit.csv": audit, "test_forecast_error_diagnostics.csv": evaluation["test_diagnostics"],
               "paired_loss_comparisons.csv": evaluation["loss_comparisons"]}
-    if "cross_model_metrics" in evaluation:
-        extras["cross_model_price_metrics.csv"] = evaluation["cross_model_metrics"]
     for filename, frame in extras.items():
         frame.to_csv(output/filename, index=False)
     hashes = {str(p.relative_to(base)): hashlib.sha256(p.read_bytes()).hexdigest()

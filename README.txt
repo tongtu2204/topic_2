@@ -1,43 +1,46 @@
-BỘ NOTEBOOK PHÂN TÍCH USD/VND
-=============================
+PHƯƠNG PHÁP SỐ 4 — SETAR/TAR CHO USD/VND
+=======================================
 
-Dữ liệu gốc:
-- data/raw/USD_VND_history.csv
-- Khoảng thời gian: 04/01/2016 đến 31/08/2026
+Mục tiêu: dự báo log-return một phiên kế tiếp bằng SETAR hai chế độ.
+Đối chứng: Zero/Naive, Mean và AR tuyến tính trong cùng thí nghiệm.
 
-Thứ tự chạy notebook:
-1. code/01_tien_xu_li_usd_vnd.ipynb
-2. code/02_chia_du_lieu_huan_luyen_usd_vnd.ipynb
-3. code/03_truc_quan_hoa_du_lieu_usd_vnd.ipynb
-4. code/04_kiem_dinh_tinh_dung_usd_vnd.ipynb
-5. code/07_mo_hinh_3_state_space_kalman_usd_vnd.ipynb
-6. code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb
+Dữ liệu:
+- Nguồn được cung cấp: data/raw/USD_VND_history.csv.
+- Dữ liệu đã xử lý: data/processed/; giữ nguyên để tái lập thí nghiệm.
+- Input bắt buộc: price_train.csv, price_validation.csv, price_test.csv,
+  return_train.csv, return_validation.csv, return_test.csv.
+- Train: 04/01/2016–31/12/2024; Validation: năm 2025;
+  Test: 01/01/2026–31/08/2026, gồm 175 dự báo.
+- Close là biến giá chính, log_return = 100 log(P_t/P_(t-1)).
+- Các dòng không thỏa logic OHLC được giữ nguyên; kiểm tra lại trong
+  results/model_4_setar_tar/data_audit.csv.
 
-Thiết kế chia dữ liệu:
-- Train: 04/01/2016 đến 31/12/2024
-- Validation: 01/01/2025 đến 31/12/2025
-- Test: 01/01/2026 đến 31/08/2026
+Chạy lại từ thư mục gốc repo:
+  pip install -r requirements.txt
+  python code/run_setar_tar_usd_vnd.py
+  python -m unittest discover -s code -p 'test_setar_tar_usd_vnd.py'
 
-Cấu trúc thư mục:
-- code/: notebook
-- data/raw/: dữ liệu gốc
-- data/processed/: dữ liệu đã xử lý và chia tập
-- figures/: biểu đồ được notebook sinh ra
-- results/: bảng kết quả và mô hình đã lưu
+Hoặc mở code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb và Run All từ
+thư mục gốc repo hoặc thư mục code. Các module .py phải đi kèm notebook.
+Các file xử lý và chia tập của bước chuẩn bị không còn trong repo;
+thí nghiệm hiện tại bắt đầu từ sáu file dữ liệu đã xử lý nêu trên.
 
-Ghi chú:
-- Cột dữ liệu gốc tiếng Việt được chuẩn hóa thành Date, Close, Open, High, Low.
-- Giá dạng chuỗi có dấu phẩy được chuyển sang số.
-- Close được dùng làm biến giá chính cho mô hình.
-- Notebook tiền xử lý chỉ gắn cờ các dòng không thỏa logic OHLC để kiểm tra nguồn, không tự động xóa.
-- Tất cả 5 notebook đã được chạy thử thành công theo đúng thứ tự trên.
+Cấu trúc:
+- code/: notebook và năm module Python của phương pháp 4.
+- results/model_4_setar_tar/: CSV, cấu hình, môi trường và README kết quả.
+- figures/model_4_setar_tar/: 11 biểu đồ của SETAR và các đối chứng.
+  Giữ số thứ tự hình hiện có; không có hình số 10.
+- report/Chuong_SETAR_TAR_USD_VND_temp.tex: bản LaTeX tạm một chương.
 
-MÔ HÌNH SỐ 4 — SETAR/TAR
-- Cài thư viện: pip install -r requirements.txt
-- Chạy từ bất kỳ thư mục nào: python code/run_setar_tar_usd_vnd.py (đường dẫn tới script phải đúng).
-- Input: log_return (%), cùng Train/Validation/Test như mô hình 3.
-- Kết quả: results/model_4_setar_tar/README.md, CSV và cấu hình.
-- Biểu đồ: figures/model_4_setar_tar/ (12 biểu đồ).
-- Các chỉ số giá/return, dự báo hướng, khoảng dự báo, diagnostics và CI chênh lệch loss đều được lưu.
-- MAPE/sMAPE chỉ tính trên giá; không áp dụng cho return có zero.
-- Notebook 08 chạy đầy đủ; kiểm tra căn chỉnh lag và chống dùng trước dữ liệu bằng test_setar_tar_usd_vnd.py.
+Đánh giá:
+- Chọn p,d theo RMSE Validation; refit trên Train+Validation;
+  tham số cố định khi chạy rolling one-step trên Test.
+- MAE/MSE/RMSE, median/max absolute error, bias, R², MASE, rRMSE,
+  WAPE; MAPE/sMAPE chỉ tính trên giá.
+- Dự báo hướng: toàn bộ phiên, phiên có giá thực tế thay đổi và balanced recall.
+- Khoảng dự báo kinh nghiệm 95%: coverage, độ rộng và interval score.
+- Chẩn đoán residual/forecast error; CI bootstrap chênh lệch loss.
+- Coverage 96% không phải tỷ lệ dự báo đúng hướng hay đúng tỷ giá.
+
+Chi tiết: results/model_4_setar_tar/README.md.
+File LaTeX chưa được biên dịch; repo không có PDF của chương này.

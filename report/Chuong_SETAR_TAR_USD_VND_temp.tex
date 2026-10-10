@@ -125,7 +125,7 @@ Mô hình tự hồi quy ngưỡng (Threshold Autoregressive, TAR) cho phép qua
 
 Trong chương này, phương pháp số 4 được triển khai dưới dạng SETAR hai chế độ trên log-return của tỷ giá USD/VND. SETAR (Self-Exciting Threshold Autoregressive) là trường hợp của TAR trong đó biến quyết định chế độ là một giá trị trễ của chính chuỗi đang mô hình hóa. Nội dung lý thuyết tham khảo phần mô hình ngưỡng của Cryer và Chan \refcite{1}{1}; các giới hạn của suy luận thống kê đối với tham số ngưỡng được đối chiếu với Hansen \refcite{2}{2}. Các công thức ước lượng, dự báo và chỉ số dưới đây mô tả trực tiếp triển khai thực nghiệm trong kho mã nguồn \refcite{3}{3}.
 
-Mục tiêu thực nghiệm là kiểm tra liệu cơ chế hai chế độ có cải thiện dự báo một phiên kế tiếp trên dữ liệu ngoài mẫu hay không. Kết quả được so sánh với dự báo return bằng 0, return trung bình, AR tuyến tính và mô hình State Space số 3. Việc chọn cấu hình được thực hiện trên Train và Validation; Test chỉ phục vụ đánh giá cuối cùng.
+Mục tiêu thực nghiệm là kiểm tra liệu cơ chế hai chế độ có cải thiện dự báo một phiên kế tiếp trên dữ liệu ngoài mẫu hay không. Kết quả được so sánh với dự báo return bằng 0, return trung bình, AR tuyến tính. Việc chọn cấu hình được thực hiện trên Train và Validation; Test chỉ phục vụ đánh giá cuối cùng.
 
 \section{Cơ sở lý thuyết của SETAR/TAR}
 
@@ -138,7 +138,7 @@ Gọi $P_t>0$ là giá đóng cửa của tỷ giá USD/VND ở quan sát thứ 
 \end{equation}
 Chỉ số $t$ biểu thị thứ tự các quan sát có trong dữ liệu, không phải mọi ngày lịch. Vì vậy, một độ trễ tương ứng một quan sát trước đó; khoảng cuối tuần không được bổ sung bằng các ngày giả tạo. Giá trị $r_t=0{,}1$ biểu thị log-return $0{,}1\%$; sai số trên thang return được diễn giải bằng điểm phần trăm (đpt).
 
-Chuỗi giá có thể mang xu hướng dài hạn, trong khi return phù hợp hơn để phân tích động học của biến động ngắn hạn. Kết quả ADF của bước chuẩn bị dữ liệu cho thấy log-return có bằng chứng bác bỏ nghiệm đơn vị. Tuy nhiên, tính dừng của chuỗi đầu vào không tự động chứng minh tính dừng toàn cục của một mô hình SETAR đã ước lượng; chương này không thực hiện chứng minh hay kiểm định riêng cho điều kiện đó.
+Chuỗi giá có thể mang xu hướng dài hạn, trong khi return phù hợp hơn để phân tích động học của biến động ngắn hạn. Việc dùng return thay cho mức giá không tự động chứng minh tính dừng toàn cục của một mô hình SETAR đã ước lượng; chương này không thực hiện chứng minh hay kiểm định riêng cho điều kiện đó.
 
 \subsection{Mô hình hai chế độ}
 
@@ -252,8 +252,6 @@ Mẫu Train có 2\,346 return, mẫu Train cộng Validation có 2\,608 return. 
 \subsection{Các mô hình đối chứng}
 
 Các đối chứng trên thang return gồm: (i) Zero, $\widehat r_t=0$; (ii) Mean, $\widehat r_t=\bar r_{\mathrm{fit}}$; và (iii) AR tuyến tính, có bậc được chọn trên Validation từ $1$ đến $10$. Zero tương ứng dự báo tỷ giá Naive $\widehat P_t=P_{t-1}$. Mean và AR sử dụng hiệu chỉnh chuyển thang bằng phân phối phần dư của mẫu fit khi tính dự báo giá chính.
-
-Để liên hệ với các phương pháp khác của bài, dự báo tỷ giá của mô hình State Space số 3 được đọc từ kết quả đã lưu. Ngày Test và giá thật được kiểm tra trùng hoàn toàn trước khi tính lại cùng bộ chỉ số. Đây là đối chiếu forecast đã có; mô hình 3 không được huấn luyện lại trong thí nghiệm số 4.
 
 \section{Các chỉ số đánh giá}
 
@@ -425,7 +423,7 @@ $R^2_{\mathrm{OS}}$ của SETAR trên return bằng $-0{,}057158$, tức SSE cao
 \setarfigure{05_forecast_metrics.png}{MAE và RMSE return trên Validation và Test của các mô hình đối chứng.}{fig:setar-return-metrics}
 \FloatBarrier
 
-\subsection{Sai số tỷ giá và so sánh với State Space}
+\subsection{Sai số tỷ giá}
 
 MAE, RMSE, Bias, Median AE và Max AE trên thang tỷ giá có đơn vị VND/USD; MSE có đơn vị $(\mathrm{VND/USD})^2$. Các chỉ số MASE, rRMSE và $R^2_{\mathrm{OS}}$ không có đơn vị.
 
@@ -441,7 +439,6 @@ Naive/Zero & $18{,}563$ & $30{,}053$ & $0{,}07090$ & $0{,}07091$ \\
 Mean & $18{,}912$ & $30{,}169$ & $0{,}07223$ & $0{,}07224$ \\
 AR(7) & $18{,}899$ & $30{,}406$ & $0{,}07219$ & $0{,}07220$ \\
 SETAR(6;4) & $19{,}484$ & $30{,}869$ & $0{,}07442$ & $0{,}07443$ \\
-State Space (MH 3) & $18{,}568$ & $30{,}055$ & $0{,}07092$ & $0{,}07093$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -457,7 +454,6 @@ Naive/Zero & $-1{,}300$ & $1{,}016289$ & $1{,}000000$ & $0{,}936698$ & $0{,}0707
 Mean & $-2{,}930$ & $1{,}035379$ & $1{,}003834$ & $0{,}936212$ & $0{,}07205$ \\
 AR(7) & $-2{,}115$ & $1{,}034686$ & $1{,}011734$ & $0{,}935204$ & $0{,}07200$ \\
 SETAR(6;4) & $-2{,}309$ & $1{,}066710$ & $1{,}027132$ & $0{,}933217$ & $0{,}07423$ \\
-State Space (MH 3) & $-1{,}325$ & $1{,}016560$ & $1{,}000037$ & $0{,}936694$ & $0{,}07074$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -473,16 +469,15 @@ Naive/Zero & $903{,}207$ & $10{,}500$ & $150{,}000$ \\
 Mean & $910{,}146$ & $11{,}635$ & $148{,}388$ \\
 AR(7) & $924{,}528$ & $11{,}078$ & $148{,}822$ \\
 SETAR(6;4) & $952{,}884$ & $12{,}420$ & $149{,}217$ \\
-State Space (MH 3) & $903{,}274$ & $10{,}525$ & $149{,}975$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Trên cùng 175 phiên Test, SETAR có MAE $19{,}484$ VND/USD, RMSE $30{,}869$ VND/USD và MAPE $0{,}07442\%$. Naive có MAE $18{,}563$ và RMSE $30{,}053$ VND/USD. Vì vậy, SETAR có RMSE cao hơn Naive khoảng $2{,}71\%$; MAE cao hơn khoảng $4{,}96\%$. State Space số 3 có RMSE $30{,}055$, gần bằng Naive và thấp hơn SETAR trong thí nghiệm này.
+Trên cùng 175 phiên Test, SETAR có MAE $19{,}484$ VND/USD, RMSE $30{,}869$ VND/USD và MAPE $0{,}07442\%$. Naive có MAE $18{,}563$ và RMSE $30{,}053$ VND/USD. Vì vậy, SETAR có RMSE cao hơn Naive khoảng $2{,}71\%$; MAE cao hơn khoảng $4{,}96\%$.
 
 MAPE trên mức tỷ giá nhỏ ở mọi mô hình, vì sai số vài chục VND được chia cho mức tỷ giá khoảng vài chục nghìn VND/USD. Không nên chuyển MAPE nhỏ thành khẳng định ``độ chính xác gần 100\%''. Tương tự, $R^2_{\mathrm{OS}}$ trên giá cao ở cả Naive và SETAR phản ánh việc các dự báo bám mức giá, không chứng minh mô hình đã khai thác được tín hiệu return hữu ích. So sánh trực tiếp với Naive trên cùng ngày đánh giá có ý nghĩa hơn đối với câu hỏi mô hình có tạo thêm lợi ích dự báo hay không.
 
-\setarfigure{10_cross_model_price_comparison.png}{So sánh MAE và RMSE tỷ giá của SETAR, các baseline và State Space số 3 trên cùng tập Test.}{fig:setar-cross-model}
+\setarfigure{08_common_price_metrics.png}{MAE, RMSE, MAPE và sMAPE tỷ giá của SETAR và các đối chứng trên cùng tập Test.}{fig:setar-price-metrics}
 \FloatBarrier
 
 \subsection{Dự báo hướng và hành vi theo chế độ}
@@ -501,7 +496,6 @@ Naive/Zero & $10{,}29$ & $0{,}00$ & $33{,}33$ \\
 Mean & $40{,}00$ & $44{,}59$ & $33{,}33$ \\
 AR(7) & $49{,}71$ & $55{,}41$ & $37{,}89$ \\
 SETAR(6;4) & $48{,}57$ & $54{,}14$ & $37{,}22$ \\
-State Space (MH 3) & $40{,}00$ & $44{,}59$ & $33{,}33$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -550,7 +544,7 @@ Test & Tỷ giá (VND/USD) & $96{,}00$ & $148{,}6113$ & $199{,}6297$ \\
 
 Trên Test, 168/175 quan sát nằm trong khoảng dự báo, đạt coverage $96\%$, với 3 quan sát nằm dưới biên thấp và 4 quan sát nằm trên biên cao. Độ rộng trung bình của khoảng tỷ giá là $148{,}611$ VND/USD. Coverage gần mức danh nghĩa $95\%$ cho thấy khoảng kinh nghiệm có độ bao phủ phù hợp trên tập Test cụ thể này, nhưng không chứng minh phân phối dự báo đã đúng hoàn toàn.
 
-State Space số 3 có coverage $94{,}86\%$, độ rộng trung bình $141{,}570$ VND/USD và interval score $195{,}106$. SETAR đạt coverage cao hơn nhưng khoảng rộng hơn; interval score $199{,}630$ cũng cao hơn State Space. Vì vậy, không thể kết luận khoảng SETAR tốt hơn chỉ vì coverage $96\%$ lớn hơn $94{,}86\%$. Quan trọng hơn, coverage $96\%$ hoàn toàn khác DA $48{,}57\%$ và không phải tỷ lệ dự báo đúng một mức tỷ giá cụ thể.
+Coverage $96\%$ hoàn toàn khác DA $48{,}57\%$ và không phải tỷ lệ dự báo đúng một mức tỷ giá cụ thể. Khi đánh giá khoảng, cần xem đồng thời độ bao phủ, độ rộng và interval score; độ bao phủ cao có thể đi kèm khoảng rộng.
 
 \setarfigure{09_test_price_prediction_interval.png}{Tỷ giá thực tế, dự báo SETAR một bước và khoảng dự báo kinh nghiệm danh nghĩa 95\% trên Test.}{fig:setar-interval}
 \FloatBarrier
@@ -637,16 +631,16 @@ Chênh lệch absolute loss so với AR có CI95\% $[0{,}1428;1{,}0437]$, hoàn 
 
 Thực nghiệm cho thấy SETAR hai chế độ có thể mô tả quan hệ tự hồi quy thay đổi theo return quá khứ. Cấu hình $p=6$, $d=4$ được chọn hợp lệ bằng Validation; ngưỡng cuối $-0{,}03880847$ đpt và các hệ số riêng của hai chế độ được ước lượng bằng Train cộng Validation. Các dự báo Test chỉ sử dụng thông tin đã có trước phiên mục tiêu, nên không lấy giá thật hiện tại để tạo forecast cho chính phiên đó.
 
-Tuy nhiên, cấu trúc linh hoạt hơn chưa tạo ra ưu thế dự báo ngoài mẫu. SETAR có RMSE tỷ giá $30{,}869$ VND/USD, cao hơn Naive khoảng $2{,}71\%$, và MAE $19{,}484$ VND/USD cũng cao hơn Naive. Kết quả trên return nhất quán với nhận xét này. Lợi ích RMSE trên Validation không được duy trì trên Test; vì vậy chưa có cơ sở kết luận phương pháp số 4 tốt hơn benchmark hoặc State Space số 3 trong bộ dữ liệu và giao thức hiện tại.
+Tuy nhiên, cấu trúc linh hoạt hơn chưa tạo ra ưu thế dự báo ngoài mẫu. SETAR có RMSE tỷ giá $30{,}869$ VND/USD, cao hơn Naive khoảng $2{,}71\%$, và MAE $19{,}484$ VND/USD cũng cao hơn Naive. Kết quả trên return nhất quán với nhận xét này. Lợi ích RMSE trên Validation không được duy trì trên Test; vì vậy chưa có cơ sở kết luận phương pháp số 4 tốt hơn các đối chứng trong bộ dữ liệu và giao thức hiện tại.
 
-Coverage $96\%$ của khoảng dự báo là một kết quả về độ bao phủ, không phải độ chính xác dự báo hướng. Khoảng SETAR rộng hơn State Space, trong khi interval score chưa tốt hơn. Kiểm định phần dư và forecast error còn chỉ ra phương sai thay đổi, đuôi dày và tự tương quan ngoài mẫu. Những đặc điểm này giới hạn cách diễn giải khoảng dự báo và cho thấy SETAR kỳ vọng hiện tại chưa giải thích đầy đủ động học biến động của tỷ giá.
+Coverage $96\%$ của khoảng dự báo là một kết quả về độ bao phủ, không phải độ chính xác dự báo hướng. Độ rộng trung bình của khoảng tỷ giá là $148{,}611$ VND/USD, với interval score $199{,}630$. Kiểm định phần dư và forecast error còn chỉ ra phương sai thay đổi, đuôi dày và tự tương quan ngoài mẫu. Những đặc điểm này giới hạn cách diễn giải khoảng dự báo và cho thấy SETAR kỳ vọng hiện tại chưa giải thích đầy đủ động học biến động của tỷ giá.
 
 Kết luận trên giới hạn ở 175 phiên Test của năm 2026, phạm vi cấu hình đã thử và nguồn dữ liệu được cung cấp. Chương chưa đánh giá dự báo nhiều bước, kiểm định phi tuyến chuyên biệt, độ nhạy theo thời kỳ hoặc lợi nhuận sau chi phí. Những hướng mở rộng đó có thể được khảo sát trong nghiên cứu tiếp theo với các giai đoạn đánh giá mới; không tiếp tục điều chỉnh cấu hình theo kết quả Test đã quan sát rồi dùng cùng Test để khẳng định cải thiện.
 
 \section*{Thông tin tái lập}
-Mã nguồn, bảng kết quả và hình minh họa được đối chiếu tại commit
+Các kết quả định lượng được đối chiếu tại commit
 \texttt{0043b0d} của kho \texttt{tongtu2204/topic\_2} \refcite{3}{3}.
-Notebook thực nghiệm là \path{code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb}; các kết quả nằm trong \path{results/model_4_setar_tar/}, hình trong \path{figures/model_4_setar_tar/}. Tám kiểm tra căn chỉnh lag, quy tắc ngưỡng và việc không sử dụng trước thông tin đã đạt; các cell code của notebook cũng đã được chạy. Chương này là bản nguồn LaTeX tạm, chưa được biên dịch hay kiểm tra dàn trang bằng PDF.
+Bản chương này chỉ trình bày phương pháp số 4 và các đối chứng Zero/Naive, Mean, AR trong cùng giao thức. Dữ liệu đã xử lý được giữ trong \path{data/processed/}; phiên bản repo hiện tại chạy độc lập từ các tập này. Notebook thực nghiệm là \path{code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb}; các kết quả nằm trong \path{results/model_4_setar_tar/}, hình trong \path{figures/model_4_setar_tar/}. Tám kiểm tra căn chỉnh lag, quy tắc ngưỡng và việc không sử dụng trước thông tin đã đạt; các cell code của notebook cũng đã được chạy. Chương này là bản nguồn LaTeX tạm, chưa được biên dịch hay kiểm tra dàn trang bằng PDF.
 
 \section*{Tài liệu tham khảo}
 \begin{enumerate}[label={[\arabic*]},leftmargin=1.2cm,itemsep=6pt]

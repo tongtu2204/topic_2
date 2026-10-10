@@ -1,9 +1,0 @@
-Diagnostic,Value
-Mean standardized innovation,0.044432771030114594
-Std standardized innovation,1.0020210956861357
-Jarque-Bera statistic,29195.781773349325
-Jarque-Bera p-value,0.0
-ARCH-LM statistic (10 lags),274.3679096461989
-ARCH-LM p-value (10 lags),4.013492126891554e-53
-ARCH F statistic,30.546564802633732
-ARCH F p-value,3.007287579642731e-56
