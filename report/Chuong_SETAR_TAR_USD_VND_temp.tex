@@ -31,8 +31,6 @@
 \usepackage{fancybox}
 \usepackage{indentfirst}
 
-\DeclareRobustCommand{\refcite}[2]{\texorpdfstring{\hyperlink{bib:#2}{[#1]}}{[#1]}}
-
 % ==================== Thiết lập bảng ====================
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \renewcommand{\arraystretch}{1.25}
@@ -92,8 +90,7 @@
 % Bản LaTeX tạm, chưa biên dịch; gồm hai chương: lý thuyết và thực nghiệm.
 % Dựa trên định dạng report/main.tex của qh25_data_mining.
 % Đặt file trong topic_2/report/ hoặc ở thư mục gốc topic_2.
-% Khi ghép vào báo cáo: lấy nội dung giữa BEGIN REPORT và END REPORT;
-% chuyển các mục tham khảo xuống danh mục chung, tránh trùng bib:1..3.
+% Khi ghép vào báo cáo: lấy nội dung giữa BEGIN REPORT và END REPORT.
 % Các hình dùng file đã có trong repo, không cần sinh lại hình.
 \newcommand{\setarfigure}[3]{%
   \begin{figure}[htbp]
@@ -113,8 +110,6 @@
 
 \begin{document}
 \fontsize{13}{20}\selectfont
-\tableofcontents
-\clearpage
 
 % ==================== BEGIN REPORT ====================
 
@@ -125,7 +120,7 @@
 
 Mô hình tự hồi quy ngưỡng (Threshold Autoregressive, TAR) cho phép quan hệ giữa giá trị hiện tại và các giá trị quá khứ thay đổi theo chế độ của chuỗi. Khác với mô hình AR tuyến tính dùng một bộ hệ số cho toàn bộ mẫu, TAR sử dụng các bộ hệ số khác nhau tại những miền giá trị của một biến ngưỡng. Cách tiếp cận này phù hợp để khảo sát khả năng phản ứng bất đối xứng của chuỗi theo lịch sử biến động; nó không mặc nhiên bảo đảm dự báo tốt hơn mô hình tuyến tính.
 
-Trong báo cáo này, phương pháp số 4 được triển khai dưới dạng SETAR hai chế độ trên log-return của tỷ giá USD/VND. SETAR (Self-Exciting Threshold Autoregressive) là trường hợp của TAR trong đó biến quyết định chế độ là một giá trị trễ của chính chuỗi đang mô hình hóa. Nội dung lý thuyết tham khảo phần mô hình ngưỡng của Cryer và Chan \refcite{1}{1}; các giới hạn của suy luận thống kê đối với tham số ngưỡng được đối chiếu với Hansen \refcite{2}{2}. Các công thức ước lượng, dự báo và chỉ số dưới đây mô tả trực tiếp triển khai thực nghiệm trong kho mã nguồn \refcite{3}{3}.
+Trong báo cáo này, phương pháp số 4 được triển khai dưới dạng SETAR hai chế độ trên log-return của tỷ giá USD/VND. SETAR (Self-Exciting Threshold Autoregressive) là trường hợp của TAR trong đó biến quyết định chế độ là một giá trị trễ của chính chuỗi đang mô hình hóa. Phần lý thuyết trình bày mô hình ngưỡng theo Cryer và Chan, đồng thời sử dụng nhận xét của Hansen về đặc điểm không chuẩn trong suy luận tham số ngưỡng. Các công thức ước lượng, dự báo và chỉ số dưới đây mô tả trực tiếp triển khai thực nghiệm của phương pháp số 4.
 
 Mục tiêu thực nghiệm là kiểm tra liệu cơ chế hai chế độ có cải thiện dự báo một phiên kế tiếp trên dữ liệu ngoài mẫu hay không. Kết quả được so sánh với dự báo return bằng 0, return trung bình, AR tuyến tính. Việc chọn cấu hình được thực hiện trên Train và Validation; Test chỉ phục vụ đánh giá cuối cùng.
 
@@ -197,7 +192,7 @@ Với từng cặp $(p,d)$, ngưỡng được chọn trong một lưới hữu 
 \end{equation}
 Việc tìm ngưỡng cần giới hạn miền ứng viên và yêu cầu đủ quan sát ở từng chế độ để tránh ước lượng thiếu ổn định. Các bậc trễ được chọn bằng sai số dự báo Validation; sau đó ước lượng lại trên Train cộng Validation trước khi đánh giá Test. Các lựa chọn cụ thể của thực nghiệm được trình bày ở Chương~\ref{chap:setar-experiment}.
 
-Theo Hansen \refcite{2}{2}, phân phối suy luận của ngưỡng có đặc điểm không chuẩn; dưới giả thuyết không có hiệu ứng ngưỡng, tham số ngưỡng không được nhận dạng theo cách thông thường. Vì vậy, việc SETAR có SSR nhỏ hơn AR trong mẫu không đủ để kết luận có phi tuyến có ý nghĩa thống kê. Thực nghiệm này chưa triển khai kiểm định hiệu ứng ngưỡng chuyên biệt và không dùng $F$-test thông thường để đưa ra kết luận đó.
+Theo kết quả lý thuyết của Hansen, phân phối suy luận của ngưỡng có đặc điểm không chuẩn; dưới giả thuyết không có hiệu ứng ngưỡng, tham số ngưỡng không được nhận dạng theo cách thông thường. Vì vậy, việc SETAR có SSR nhỏ hơn AR trong mẫu không đủ để kết luận có phi tuyến có ý nghĩa thống kê. Thực nghiệm này chưa triển khai kiểm định hiệu ứng ngưỡng chuyên biệt và không dùng $F$-test thông thường để đưa ra kết luận đó.
 
 \subsection{Dự báo một bước và chuyển về tỷ giá}
 
@@ -290,7 +285,7 @@ Coverage là tỷ lệ $y_t\in[L_t,U_t]$, còn độ rộng trung bình là $n^{
 \chapter{THỰC NGHIỆM SETAR/TAR TRÊN TỶ GIÁ USD/VND}
 \label{chap:setar-experiment}
 
-Chương này áp dụng mô hình và các chỉ số được định nghĩa ở Chương~\ref{chap:setar-theory} cho dữ liệu USD/VND. Nội dung gồm dữ liệu, quy trình chọn cấu hình, bảng tổng hợp toàn bộ chỉ số của SETAR, kết quả đối chứng và chẩn đoán sai số. Các bảng được lấy từ kết quả đã chạy; không điều chỉnh cấu hình theo Test.
+Chương này áp dụng mô hình và các chỉ số được định nghĩa ở Chương~\ref{chap:setar-theory} cho dữ liệu USD/VND. Sau phần dữ liệu và giao thức đánh giá, chương trình bày bảng tổng hợp toàn bộ kết quả trước, rồi mới phân tích chi tiết việc chọn cấu hình, sai số dự báo, dự báo hướng, khoảng dự báo và chẩn đoán. Các bảng được lấy từ kết quả đã chạy; không điều chỉnh cấu hình theo Test.
 
 \section{Dữ liệu và thiết kế thực nghiệm}
 
@@ -332,61 +327,6 @@ Triển khai dùng tối đa 71 ngưỡng lấy theo phân vị từ $15\%$ đ�
 Hệ số và ngưỡng được học từ Train. Sau đó, $(p,d)$ được chọn bằng RMSE dự báo trên Validation. BIC trong bảng tìm kiếm chỉ là thông tin mô tả trong mẫu, không thay thế tiêu chí chọn ngoài mẫu. Sau khi cố định $(p,d)$, mô hình được refit trên Train cộng Validation; bước này được phép cập nhật ngưỡng và hệ số bằng mẫu fit mới.
 
 Việc so sánh chênh lệch loss sử dụng 2\,000 mẫu bootstrap, độ dài block bằng 5 và seed 20261010; thống kê HAC tham khảo sử dụng bandwidth bằng 5.
-
-\section{Kết quả chọn cấu hình và ước lượng}
-
-\subsection{Lựa chọn trên Validation}
-
-Có 50 cặp $(p,d)$ SETAR và 10 bậc AR tuyến tính được so sánh. Mỗi cặp SETAR có một ngưỡng đã được chọn bằng SSR trên Train. Bảng~\ref{tab:setar-grid} trình bày sáu ứng viên SETAR tốt nhất theo RMSE Validation.
-
-\begin{table}[htbp]
-\centering\small
-\caption{Sáu cấu hình SETAR có RMSE Validation thấp nhất}
-\label{tab:setar-grid}
-\begin{tabular}{rrrrr}
-\toprule
-$p$ & $d$ & $\widehat\gamma$ (đpt) & RMSE (đpt) & MAE (đpt) \\
-\midrule
-6 & 4 & $-0{,}039392$ & $0{,}165605$ & $0{,}100953$ \\
-10 & 4 & $-0{,}008533$ & $0{,}165879$ & $0{,}101341$ \\
-3 & 4 & $-0{,}008788$ & $0{,}165891$ & $0{,}101322$ \\
-8 & 4 & $-0{,}017952$ & $0{,}166245$ & $0{,}101036$ \\
-9 & 4 & $-0{,}008533$ & $0{,}166245$ & $0{,}101086$ \\
-7 & 4 & $-0{,}008533$ & $0{,}166550$ & $0{,}101611$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Cấu hình được chọn là $p=6$, $d=4$, với ngưỡng Train $\widehat\gamma=-0{,}03939218$ đpt. RMSE Validation của SETAR là $0{,}165605$ đpt, thấp hơn Zero ($0{,}168590$) khoảng $1{,}77\%$ và thấp hơn AR được chọn ($0{,}167174$). Tuy nhiên, MAE SETAR trên Validation bằng $0{,}100953$, cao hơn MAE Zero $0{,}097492$. Do đó, lợi ích xuất hiện ở tiêu chí RMSE dùng để chọn cấu hình, không nhất quán trên mọi chỉ số. Khoảng cách giữa các ứng viên SETAR đứng đầu cũng nhỏ.
-
-\setarfigure{01_validation_grid.png}{RMSE return trên Validation cho các cặp bậc $p$ và độ trễ ngưỡng $d$; ô đánh dấu là cấu hình được chọn.}{fig:setar-grid}
-\setarfigure{02_threshold_profile.png}{Hồ sơ SSR theo ngưỡng của cấu hình đã chọn trên Train và trên mẫu refit Train cộng Validation.}{fig:setar-threshold}
-\FloatBarrier
-
-\subsection{Mô hình cuối sau refit}
-
-Sau refit, bậc và độ trễ vẫn giữ $p=6$, $d=4$, còn ngưỡng là $\widehat\gamma=-0{,}03880847$ đpt. Trong 2\,598 quan sát fit, Low có 624 quan sát và High có 1\,974 quan sát. Ngưỡng dịch chuyển nhẹ so với lần fit trên Train, phù hợp việc mẫu ước lượng đã được mở rộng đến hết năm 2025.
-
-\begin{table}[htbp]
-\centering\small
-\caption{Hệ số SETAR sau refit trên Train và Validation}
-\label{tab:setar-coef}
-\begin{tabular}{lrr}
-\toprule
-Thành phần & Chế độ Low & Chế độ High \\
-\midrule
-$a$ & $0{,}027187$ & $0{,}001217$ \\
-$\phi_1$ & $0{,}112797$ & $0{,}073145$ \\
-$\phi_2$ & $-0{,}001940$ & $-0{,}086873$ \\
-$\phi_3$ & $0{,}207512$ & $0{,}063990$ \\
-$\phi_4$ & $0{,}185035$ & $0{,}100400$ \\
-$\phi_5$ & $0{,}046388$ & $-0{,}042372$ \\
-$\phi_6$ & $0{,}103539$ & $0{,}044729$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Các bộ hệ số khác nhau mô tả phản ứng có điều kiện khác nhau ở hai miền của return trễ. Bảng~\ref{tab:setar-coef} chỉ trình bày giá trị ước lượng, chưa kèm khoảng tin cậy tham số hay kiểm định khác biệt giữa các chế độ; vì vậy không suy diễn ý nghĩa thống kê của từng chênh lệch hệ số.
 
 \section{Bảng tổng hợp toàn bộ chỉ số đánh giá}
 
@@ -497,6 +437,61 @@ Tỷ giá / tuyệt đối / AR & \multicolumn{5}{L{10.3cm}}{TB $0{,}584914$; CI
 \endgroup
 
 Các kiểm định và p-value chỉ mang tính chẩn đoán, chưa hiệu chỉnh cho chọn ngưỡng hoặc nhiều lần kiểm định. CI bootstrap và HAC dùng các giả định khác nhau và chưa được khảo sát độ nhạy. Báo cáo chưa thực hiện kiểm định hiệu ứng ngưỡng chuyên biệt; không dùng bảng này để khẳng định mọi kiểm định lý thuyết của SETAR đã hoàn tất.
+
+\section{Kết quả chọn cấu hình và ước lượng}
+
+\subsection{Lựa chọn trên Validation}
+
+Có 50 cặp $(p,d)$ SETAR và 10 bậc AR tuyến tính được so sánh. Mỗi cặp SETAR có một ngưỡng đã được chọn bằng SSR trên Train. Bảng~\ref{tab:setar-grid} trình bày sáu ứng viên SETAR tốt nhất theo RMSE Validation.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Sáu cấu hình SETAR có RMSE Validation thấp nhất}
+\label{tab:setar-grid}
+\begin{tabular}{rrrrr}
+\toprule
+$p$ & $d$ & $\widehat\gamma$ (đpt) & RMSE (đpt) & MAE (đpt) \\
+\midrule
+6 & 4 & $-0{,}039392$ & $0{,}165605$ & $0{,}100953$ \\
+10 & 4 & $-0{,}008533$ & $0{,}165879$ & $0{,}101341$ \\
+3 & 4 & $-0{,}008788$ & $0{,}165891$ & $0{,}101322$ \\
+8 & 4 & $-0{,}017952$ & $0{,}166245$ & $0{,}101036$ \\
+9 & 4 & $-0{,}008533$ & $0{,}166245$ & $0{,}101086$ \\
+7 & 4 & $-0{,}008533$ & $0{,}166550$ & $0{,}101611$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Cấu hình được chọn là $p=6$, $d=4$, với ngưỡng Train $\widehat\gamma=-0{,}03939218$ đpt. RMSE Validation của SETAR là $0{,}165605$ đpt, thấp hơn Zero ($0{,}168590$) khoảng $1{,}77\%$ và thấp hơn AR được chọn ($0{,}167174$). Tuy nhiên, MAE SETAR trên Validation bằng $0{,}100953$, cao hơn MAE Zero $0{,}097492$. Do đó, lợi ích xuất hiện ở tiêu chí RMSE dùng để chọn cấu hình, không nhất quán trên mọi chỉ số. Khoảng cách giữa các ứng viên SETAR đứng đầu cũng nhỏ.
+
+\setarfigure{01_validation_grid.png}{RMSE return trên Validation cho các cặp bậc $p$ và độ trễ ngưỡng $d$; ô đánh dấu là cấu hình được chọn.}{fig:setar-grid}
+\setarfigure{02_threshold_profile.png}{Hồ sơ SSR theo ngưỡng của cấu hình đã chọn trên Train và trên mẫu refit Train cộng Validation.}{fig:setar-threshold}
+\FloatBarrier
+
+\subsection{Mô hình cuối sau refit}
+
+Sau refit, bậc và độ trễ vẫn giữ $p=6$, $d=4$, còn ngưỡng là $\widehat\gamma=-0{,}03880847$ đpt. Trong 2\,598 quan sát fit, Low có 624 quan sát và High có 1\,974 quan sát. Ngưỡng dịch chuyển nhẹ so với lần fit trên Train, phù hợp việc mẫu ước lượng đã được mở rộng đến hết năm 2025.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Hệ số SETAR sau refit trên Train và Validation}
+\label{tab:setar-coef}
+\begin{tabular}{lrr}
+\toprule
+Thành phần & Chế độ Low & Chế độ High \\
+\midrule
+$a$ & $0{,}027187$ & $0{,}001217$ \\
+$\phi_1$ & $0{,}112797$ & $0{,}073145$ \\
+$\phi_2$ & $-0{,}001940$ & $-0{,}086873$ \\
+$\phi_3$ & $0{,}207512$ & $0{,}063990$ \\
+$\phi_4$ & $0{,}185035$ & $0{,}100400$ \\
+$\phi_5$ & $0{,}046388$ & $-0{,}042372$ \\
+$\phi_6$ & $0{,}103539$ & $0{,}044729$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Các bộ hệ số khác nhau mô tả phản ứng có điều kiện khác nhau ở hai miền của return trễ. Bảng~\ref{tab:setar-coef} chỉ trình bày giá trị ước lượng, chưa kèm khoảng tin cậy tham số hay kiểm định khác biệt giữa các chế độ; vì vậy không suy diễn ý nghĩa thống kê của từng chênh lệch hệ số.
 
 \section{Kết quả dự báo ngoài mẫu}
 
@@ -750,38 +745,10 @@ Chênh lệch absolute loss so với AR có CI95\% $[0{,}1428;1{,}0437]$, hoàn 
 \setarfigure{06_cumulative_loss.png}{Chênh lệch loss return tích lũy giữa SETAR và các baseline; giá trị dương nghĩa SETAR có sai số cao hơn.}{fig:setar-loss}
 \FloatBarrier
 
-\section{Thảo luận và kết luận}
-
-Thực nghiệm cho thấy SETAR hai chế độ có thể mô tả quan hệ tự hồi quy thay đổi theo return quá khứ. Cấu hình $p=6$, $d=4$ được chọn hợp lệ bằng Validation; ngưỡng cuối $-0{,}03880847$ đpt và các hệ số riêng của hai chế độ được ước lượng bằng Train cộng Validation. Các dự báo Test chỉ sử dụng thông tin đã có trước phiên mục tiêu, nên không lấy giá thật hiện tại để tạo forecast cho chính phiên đó.
-
-Tuy nhiên, cấu trúc linh hoạt hơn chưa tạo ra ưu thế dự báo ngoài mẫu. SETAR có RMSE tỷ giá $30{,}869$ VND/USD, cao hơn Naive khoảng $2{,}71\%$, và MAE $19{,}484$ VND/USD cũng cao hơn Naive. Kết quả trên return nhất quán với nhận xét này. Lợi ích RMSE trên Validation không được duy trì trên Test; vì vậy chưa có cơ sở kết luận phương pháp số 4 tốt hơn các đối chứng trong bộ dữ liệu và giao thức hiện tại.
-
-Coverage $96\%$ của khoảng dự báo là một kết quả về độ bao phủ, không phải độ chính xác dự báo hướng. Độ rộng trung bình của khoảng tỷ giá là $148{,}611$ VND/USD, với interval score $199{,}630$. Kiểm định phần dư và forecast error còn chỉ ra phương sai thay đổi, đuôi dày và tự tương quan ngoài mẫu. Những đặc điểm này giới hạn cách diễn giải khoảng dự báo và cho thấy SETAR kỳ vọng hiện tại chưa giải thích đầy đủ động học biến động của tỷ giá.
-
-Kết luận trên giới hạn ở 175 phiên Test của năm 2026, phạm vi cấu hình đã thử và nguồn dữ liệu được cung cấp. Báo cáo chưa đánh giá dự báo nhiều bước, kiểm định phi tuyến chuyên biệt, độ nhạy theo thời kỳ hoặc lợi nhuận sau chi phí. Những hướng mở rộng đó có thể được khảo sát trong nghiên cứu tiếp theo với các giai đoạn đánh giá mới; không tiếp tục điều chỉnh cấu hình theo kết quả Test đã quan sát rồi dùng cùng Test để khẳng định cải thiện.
-
 \section*{Thông tin tái lập}
 Các kết quả định lượng được đối chiếu tại commit
-\texttt{0043b0d} của kho \texttt{tongtu2204/topic\_2} \refcite{3}{3}.
+\texttt{0043b0d} của kho \texttt{tongtu2204/topic\_2}.
 Báo cáo này gồm hai chương, chỉ trình bày phương pháp số 4 và các đối chứng Zero/Naive, Mean, AR trong cùng giao thức. Dữ liệu đã xử lý được giữ trong \path{data/processed/}; phiên bản repo hiện tại chạy độc lập từ các tập này. Notebook thực nghiệm là \path{code/08_mo_hinh_4_setar_tar_usd_vnd.ipynb}; các kết quả nằm trong \path{results/model_4_setar_tar/}, hình trong \path{figures/model_4_setar_tar/}. Tám kiểm tra căn chỉnh lag, quy tắc ngưỡng và việc không sử dụng trước thông tin đã đạt; các cell code của notebook cũng đã được chạy. Báo cáo này là bản nguồn LaTeX tạm, chưa được biên dịch hay kiểm tra dàn trang bằng PDF.
-
-\section*{Tài liệu tham khảo}
-\begin{enumerate}[label={[\arabic*]},leftmargin=1.2cm,itemsep=6pt]
- \item \hypertarget{bib:1}{}J. D. Cryer và K.-S. Chan.
- \textit{Time Series Analysis: With Applications in R}, ấn bản 2.
- Springer, 2008. Phần Threshold Models, tr.~383--422.
- \url{https://doi.org/10.1007/978-0-387-75959-3}.
-
- \item \hypertarget{bib:2}{}B. E. Hansen.
- ``Inference in TAR Models.''
- \textit{Studies in Nonlinear Dynamics and Econometrics}, tập 2, số 1, 1997.
- \url{https://users.ssc.wisc.edu/~behansen/papers/snde_97.html}.
-
- \item \hypertarget{bib:3}{}Nhóm thực nghiệm.
- \textit{topic\_2: phân tích và dự báo tỷ giá USD/VND}.
- Kho mã nguồn GitHub, commit \texttt{0043b0d1ef4146232a46e45bb73edf41dc1cb2fb}, 2026.
- \url{https://github.com/tongtu2204/topic_2/tree/0043b0d1ef4146232a46e45bb73edf41dc1cb2fb}.
-\end{enumerate}
 
 % ==================== END REPORT ====================
 \end{document}
