@@ -30,7 +30,8 @@ Cấu trúc:
 - results/model_4_setar_tar/: CSV, cấu hình, môi trường và README kết quả.
 - figures/model_4_setar_tar/: 11 biểu đồ của SETAR và các đối chứng.
   Giữ số thứ tự hình hiện có; không có hình số 10.
-- report/Chuong_SETAR_TAR_USD_VND_temp.tex: bản LaTeX tạm một chương.
+- report/Chuong_SETAR_TAR_USD_VND_temp.tex: bản LaTeX tạm hai chương: lý thuyết và thực nghiệm,
+  có bảng tổng hợp toàn bộ chỉ số đánh giá SETAR/TAR.
 
 Đánh giá:
 - Chọn p,d theo RMSE Validation; refit trên Train+Validation;
@@ -43,4 +44,4 @@ Cấu trúc:
 - Coverage 96% không phải tỷ lệ dự báo đúng hướng hay đúng tỷ giá.
 
 Chi tiết: results/model_4_setar_tar/README.md.
-File LaTeX chưa được biên dịch; repo không có PDF của chương này.
+File LaTeX chưa được biên dịch; repo không có PDF của báo cáo này.
