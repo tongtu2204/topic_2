@@ -1,0 +1,5 @@
+Split,Model,Scale,Nominal_coverage_percent,PI_coverage_percent,Average_PI_width,Mean_interval_score,Below_lower_N,Above_upper_N
+validation,SETAR,return_percent,95.0,93.12977099236642,0.5452063731515185,1.1336628780174434,7,11
+validation,SETAR,price_VND_per_USD,95.0,93.12977099236642,141.75802921047625,291.97311113897985,7,11
+test,SETAR,return_percent,95.0,96.0,0.5661681872795297,0.7617814273417766,3,4
+test,SETAR,price_VND_per_USD,95.0,96.0,148.61134984447605,199.6297480930491,3,4

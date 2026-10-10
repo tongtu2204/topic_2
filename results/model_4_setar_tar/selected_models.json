@@ -1,0 +1,165 @@
+{
+  "protocol": "fixed parameters, sequential one-step forecast using realized past returns",
+  "selection": "p,d by validation RMSE; threshold minimizes estimation-sample SSR",
+  "orders": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "delays": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "threshold_quantiles": [
+    0.15,
+    0.85
+  ],
+  "threshold_grid_points": 71,
+  "minimum_regime_fraction": 0.15,
+  "common_fit_start": 10,
+  "unit": "log_return = 100 * log(Close[t]/Close[t-1])",
+  "splits": {
+    "train": {
+      "n": 2346,
+      "start": "2016-01-05",
+      "end": "2024-12-31"
+    },
+    "validation": {
+      "n": 262,
+      "start": "2025-01-01",
+      "end": "2025-12-31"
+    },
+    "test": {
+      "n": 175,
+      "start": "2026-01-01",
+      "end": "2026-08-31"
+    }
+  },
+  "models": {
+    "train": {
+      "AR": {
+        "p": 7,
+        "nobs": 2336,
+        "rss": 40.015276028521285,
+        "beta": [
+          0.0036797426448644767,
+          0.09869693216556541,
+          -0.038262887862890706,
+          0.12557426499060118,
+          0.09549928469147008,
+          -0.003996445249498479,
+          0.06677923220383748,
+          0.006310944824162995
+        ]
+      },
+      "SETAR": {
+        "p": 6,
+        "nobs": 2336,
+        "rss": 39.46869971632905,
+        "d": 4,
+        "threshold": -0.039392179845257266,
+        "n_low": 538,
+        "n_high": 1798,
+        "beta_low": [
+          0.029508223653080035,
+          0.12337248996226838,
+          -0.01869359619555159,
+          0.2043204141306683,
+          0.23038875969419106,
+          0.020336257727266802,
+          0.09091793645731702
+        ],
+        "beta_high": [
+          0.003008992214529643,
+          0.0863835497904074,
+          -0.05147508546379519,
+          0.07424102086490744,
+          0.07696432544995362,
+          -0.022154268470588243,
+          0.04282110589414285
+        ]
+      }
+    },
+    "train_validation": {
+      "AR": {
+        "p": 7,
+        "nobs": 2598,
+        "rss": 47.298615888771174,
+        "beta": [
+          0.004283025242543206,
+          0.08675423768640378,
+          -0.056154977363768406,
+          0.12305123371448516,
+          0.08494844427073232,
+          -0.008586866498962958,
+          0.07111618813328743,
+          0.016727112825762256
+        ]
+      },
+      "SETAR": {
+        "p": 6,
+        "nobs": 2598,
+        "rss": 46.4952326315065,
+        "d": 4,
+        "threshold": -0.0388084652910436,
+        "n_low": 624,
+        "n_high": 1974,
+        "beta_low": [
+          0.02718709677877089,
+          0.11279732704215825,
+          -0.0019396914101872968,
+          0.20751228113074502,
+          0.185034628413659,
+          0.04638777153179467,
+          0.10353921849176355
+        ],
+        "beta_high": [
+          0.0012166961158480334,
+          0.07314529921287327,
+          -0.08687336110476493,
+          0.0639897900839473,
+          0.10040002927104202,
+          -0.0423722182302759,
+          0.044728796144612275
+        ]
+      }
+    }
+  },
+  "asset": "USD/VND",
+  "price_unit": "VND per USD",
+  "data_sha256": {
+    "data/processed/price_test.csv": "20ec8398255c7dfa174170e2577c703731b3e2670cd4a67a61d106c41838e487",
+    "data/processed/price_train.csv": "0ea59b964074f71de2a3e89f679327b0e471c78376711ed406339235e8c0afba",
+    "data/processed/price_validation.csv": "260aa874c6e657b998dda45e8ff1a807bc90c28e946f2c75f13320a62e5aba1a",
+    "data/processed/return_test.csv": "e1e94314ccd46ca2c8029f0df85bef335a11a86767930e578a0f7ca68034fc6f",
+    "data/processed/return_train.csv": "a14050be4ef5941d19da0f3cbb2300536f7324623eb1c5418a838850e7187296",
+    "data/processed/return_validation.csv": "84b392cf3bbe2dbae2277f8649ae2c0fe354d0aa25c91556bc2e5055a84cea3c",
+    "data/processed/usd_vnd_price_clean.csv": "1ca9c99e4398aa09bb983f29764d6632d45accdbb6978cc32e5ddddba33f19b8",
+    "data/processed/usd_vnd_return_clean.csv": "096ad6393f7300b840ab1ca9aef1e26fa517d3125bcaad426448f4cc729a674e"
+  },
+  "price_point_forecast": "previous_close * exp(predicted_return/100) * empirical regime-specific residual smearing",
+  "intervals": "95% empirical estimation-sample residual quantiles by regime; no parameter uncertainty; no test calibration",
+  "MASE_price": "MAE / mean absolute price differences on complete estimation price split",
+  "MASE_return": "MAE / mean absolute return differences on estimation split (persistence return scale)",
+  "return_Relative_RMSE_benchmark": "Zero return",
+  "price_Relative_RMSE_benchmark": "Previous close",
+  "direction": "3 classes: down/flat/up; also report nonzero-actual and balanced class recall",
+  "percentage_metrics": "Return MAPE/sMAPE left blank: zero/near-zero signed target; calculated on price only",
+  "diagnostics": "Descriptive: Ljung-Box/ARCH/JB are not a formal linearity or threshold significance test",
+  "bootstrap": {
+    "draws": 2000,
+    "block_length": 5,
+    "seed": 20261010
+  },
+  "python": "3.12.14"
+}
