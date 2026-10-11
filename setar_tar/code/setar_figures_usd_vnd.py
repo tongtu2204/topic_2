@@ -1,4 +1,3 @@
-"""Figures and a Vietnamese results note for the SETAR experiment."""
 from pathlib import Path
 
 import matplotlib.pyplot as plt

@@ -1,0 +1,30 @@
+\xpg@aux {}{vietnamese}
+\contentsline {chapter}{\numberline {1}CƠ SỞ LÝ THUYẾT CỦA PHƯƠNG PHÁP SETAR/TAR}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Mục tiêu và cơ sở lựa chọn phương pháp}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Cơ sở lý thuyết của SETAR/TAR}{4}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Biến đầu vào và ý nghĩa của thang đo}{4}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Mô hình hai chế độ}{4}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Ước lượng hệ số và tìm ngưỡng}{5}{subsection.1.2.3}%
+\contentsline {subsection}{\numberline {1.2.4}Dự báo một bước và chuyển về tỷ giá}{6}{subsection.1.2.4}%
+\contentsline {section}{\numberline {1.3}Các chỉ số đánh giá}{6}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Sai số điểm và chuẩn so sánh}{6}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Khả năng dự báo hướng}{7}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}Khoảng dự báo và độ chắc chắn của chênh lệch sai số}{8}{subsection.1.3.3}%
+\contentsline {chapter}{\numberline {2}THỰC NGHIỆM SETAR/TAR TRÊN TỶ GIÁ USD/VND}{9}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Dữ liệu và thiết kế thực nghiệm}{9}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Dữ liệu, chia tập và kiểm soát thông tin tương lai}{9}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Các mô hình đối chứng}{10}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Không gian cấu hình và giao thức ước lượng}{10}{subsection.2.1.3}%
+\contentsline {section}{\numberline {2.2}Kết quả chọn cấu hình và ước lượng}{10}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Lựa chọn trên Validation}{10}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Mô hình cuối sau refit}{12}{subsection.2.2.2}%
+\contentsline {section}{\numberline {2.3}Bảng tổng hợp toàn bộ chỉ số đánh giá}{13}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Kết quả dự báo ngoài mẫu}{17}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Sai số trên thang return}{17}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Sai số tỷ giá}{20}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Dự báo hướng và hành vi theo chế độ}{21}{subsection.2.4.3}%
+\contentsline {section}{\numberline {2.5}Khoảng dự báo và chẩn đoán phần dư}{23}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Chất lượng khoảng dự báo}{23}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Phần dư trong mẫu fit và sai số trên Test}{24}{subsection.2.5.2}%
+\contentsline {section}{\numberline {2.6}Độ chắc chắn của chênh lệch sai số}{26}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Thảo luận và kết luận}{27}{section.2.7}%

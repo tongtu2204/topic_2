@@ -1,8 +1,3 @@
-"""Two-regime SETAR estimated by conditional least squares.
-
-The threshold variable is y[t-d], so this is a self-exciting TAR.
-All forecast inputs are strictly earlier than the target observation.
-"""
 from dataclasses import dataclass
 from pathlib import Path
 import json

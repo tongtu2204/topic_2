@@ -1,9 +1,3 @@
-"""Complete USD/VND evaluation; selection remains in setar_tar_usd_vnd.
-
-Test observations update lags, never fitted parameters or interval quantiles.
-Empirical residual smearing converts a return conditional mean to a price
-conditional mean without assuming Gaussian innovations.
-"""
 from pathlib import Path
 import hashlib
 import json

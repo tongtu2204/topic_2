@@ -1,4 +1,3 @@
-"""Verify delay alignment, threshold boundaries and forecast information use."""
 import unittest
 
 import numpy as np
