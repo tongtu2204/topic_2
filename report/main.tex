@@ -1,0 +1,1191 @@
+% !TeX program = xelatex
+% 47 pages: 38 presentation slides + 7-part contents + 7 part dividers + dedicated closing
+\documentclass[aspectratio=169,10pt]{beamer}
+\usepackage{fontspec}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric}
+\usepackage{booktabs,tabularx,array,colortbl,multirow}
+\usepackage{graphicx}
+\usepackage{microtype}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usefonttheme{serif}
+\linespread{1.0}
+
+% ---------- Red academic theme (according to user's specification) ----------
+\definecolor{mainred}{HTML}{B71922}
+\definecolor{darkred}{HTML}{82151B}
+\definecolor{footerred}{HTML}{991820}
+\definecolor{softred}{HTML}{F9E9EA}
+\definecolor{darkgray}{HTML}{242424}
+\definecolor{midgray}{HTML}{666666}
+\definecolor{lightgray}{HTML}{F2F2F0}
+\definecolor{paperbg}{HTML}{FAFAF8}
+\definecolor{goodgreen}{HTML}{2E7D32}
+\definecolor{warnorange}{HTML}{B85C00}
+\definecolor{badred}{HTML}{7F1016}
+
+\setbeamercolor{background canvas}{bg=paperbg}
+\setbeamercolor{normal text}{fg=darkgray,bg=paperbg}
+\setbeamercolor{structure}{fg=mainred}
+\setbeamercolor{frametitle}{fg=white,bg=mainred}
+\setbeamercolor{title}{fg=mainred}
+\setbeamercolor{subtitle}{fg=midgray}
+\setbeamercolor{block title}{fg=white,bg=mainred}
+\setbeamercolor{block body}{fg=darkgray,bg=softred}
+\setbeamercolor{alerted text}{fg=badred}
+\setbeamercolor{author in head/foot}{bg=darkred,fg=white}
+\setbeamercolor{title in head/foot}{bg=footerred,fg=white}
+\setbeamercolor{date in head/foot}{bg=mainred,fg=white}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries,family=\rmfamily}
+\setbeamerfont{title}{size=\LARGE,series=\bfseries,family=\rmfamily}
+\setbeamerfont{block title}{series=\bfseries,family=\rmfamily}
+\setbeamerfont{normal text}{family=\rmfamily}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{itemize item}{\color{mainred}\small$\bullet$}
+\setbeamertemplate{itemize subitem}{\color{midgray}\scriptsize$\circ$}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamersize{text margin left=0.72cm,text margin right=0.72cm}
+\setlength{\parskip}{0.0em}
+% Top academic section breadcrumb + presentation title.
+\setbeamercolor{sectionheader}{fg=darkred,bg=softred}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.23cm,dp=0.08cm,leftskip=0.69cm,rightskip=0.68cm]{sectionheader}%
+    {\fontsize{7.4}{8.6}\selectfont\bfseries\insertsectionhead\hfill CHUYÊN ĐỀ 2 \enspace / \enspace USD/VND}%
+  \end{beamercolorbox}%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.66cm,dp=0.17cm,leftskip=0.68cm]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}%
+}
+% References live in a dedicated right-aligned baseline ABOVE the footer.
+% This placement does not consume space in the main slide flow.
+\newcommand{\slideRef}{}
+\AtBeginEnvironment{frame}{\gdef\slideRef{}}
+\setbeamercolor{reference bar}{bg=paperbg,fg=midgray}
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \vbox{%
+  \hbox{\begin{beamercolorbox}[wd=\paperwidth,ht=1.65ex,dp=0.48ex,rightskip=0.66cm]{reference bar}%
+    \hfill\fontsize{6.5}{7.5}\selectfont\color{midgray}\slideRef
+  \end{beamercolorbox}}%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.23\paperwidth,ht=2.65ex,dp=1.05ex,leftskip=0.35cm]{author in head/foot}%
+    \color{white}\scriptsize\bfseries CHUYÊN ĐỀ 2
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.64\paperwidth,ht=2.65ex,dp=1.05ex,center]{title in head/foot}%
+    \color{white}\scriptsize PHÂN TÍCH VÀ DỰ BÁO TỶ GIÁ USD/VND
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.13\paperwidth,ht=2.65ex,dp=1.05ex,center]{date in head/foot}%
+    \color{white}\scriptsize\bfseries \insertframenumber/\inserttotalframenumber
+  \end{beamercolorbox}%
+  }%
+  }%
+}
+\setbeamertemplate{itemize/enumerate body begin}{\small}
+\setbeamertemplate{itemize/enumerate subbody begin}{\footnotesize}
+\newcommand{\topic}[1]{\vspace{0.04cm}{\color{mainred}\bfseries\small #1}\par\vspace{0.08cm}}
+\newcommand{\src}[1]{\gdef\slideRef{#1}}
+\newcommand{\takeaway}[1]{\vspace{0.06cm}\begin{beamercolorbox}[wd=\linewidth,sep=0.13cm,rounded=true]{block body}{\small\color{darkred}\textbf{Kết luận:} #1}\end{beamercolorbox}}
+\newcommand{\notegray}[1]{{\small\color{midgray}#1}}
+\newcommand{\kpi}[3]{\begin{minipage}[c]{0.30\linewidth}\centering\begin{beamercolorbox}[wd=\linewidth,sep=0.12cm,center,rounded=true]{block body}{\Large\bfseries\color{mainred}#1}\par\vspace{0.03cm}{\footnotesize\color{darkgray}#2}\par{\scriptsize\color{midgray}#3}\end{beamercolorbox}\end{minipage}}
+\newcommand{\twoplot}[4]{%
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}\centering\includegraphics[width=\linewidth,height=3.0cm,keepaspectratio]{assets/#1.png}\\[-2pt]{\scriptsize\color{midgray}#2}\end{column}
+\begin{column}{0.49\textwidth}\centering\includegraphics[width=\linewidth,height=3.0cm,keepaspectratio]{assets/#3.png}\\[-2pt]{\scriptsize\color{midgray}#4}\end{column}
+\end{columns}}
+\newcommand{\bigfig}[3]{\centering\includegraphics[width=#2,height=#3,keepaspectratio]{assets/#1.png}}
+\tikzset{flow/.style={draw=mainred!60,fill=softred,rounded corners=3pt,align=center,minimum height=0.72cm,inner sep=4pt},
+arrow/.style={-{Latex[length=2.4mm]},thick,draw=mainred},dim/.style={draw=midgray!45,fill=lightgray,rounded corners=3pt,align=center,inner sep=6pt}}
+\tikzset{algstep/.style={draw=mainred!65,fill=softred,rounded corners=3pt,
+  text width=2.25cm,minimum height=1.02cm,align=center,inner sep=3pt,font=\small}}
+\newcommand{\procflow}[8]{%
+\begin{tikzpicture}[node distance=0.26cm]
+\node[algstep](stepa){{\color{mainred}\bfseries\scriptsize BƯỚC 01}\\[-2pt]\textbf{#1}\\[-2pt]{\scriptsize #2}};
+\node[algstep,right=of stepa](stepb){{\color{mainred}\bfseries\scriptsize BƯỚC 02}\\[-2pt]\textbf{#3}\\[-2pt]{\scriptsize #4}};
+\node[algstep,right=of stepb](stepc){{\color{mainred}\bfseries\scriptsize BƯỚC 03}\\[-2pt]\textbf{#5}\\[-2pt]{\scriptsize #6}};
+\node[algstep,right=of stepc](stepd){{\color{mainred}\bfseries\scriptsize BƯỚC 04}\\[-2pt]\textbf{#7}\\[-2pt]{\scriptsize #8}};
+\draw[arrow](stepa)--(stepb); \draw[arrow](stepb)--(stepc); \draw[arrow](stepc)--(stepd);
+\end{tikzpicture}\par%
+}
+\hypersetup{pdftitle={Phan tich va du bao ty gia USD/VND - Chuyen de 2, 47 slides, seven section dividers},pdfauthor={Nhom Chuyen de 2},colorlinks=false}
+
+
+% ---------- Editable academic seven-part dividers and contents ----------
+% All new slides are vector-based with local 16x9cm coordinates.
+% They are not flattened screenshot images and can be edited in this file.
+\newcommand{\specialpagebase}{%
+  \path[use as bounding box] (0,0) rectangle (16,9);
+  \fill[paperbg] (0,0) rectangle (16,9);
+  \begin{scope}
+   \clip (0,.48) rectangle (16,8.04);
+   \fill[softred] (14.50,-.1) circle (2.87);
+  \end{scope}
+  \path[shade,left color=darkred,right color=mainred] (0,8.04) rectangle (16,9);
+  % Segmented Beamer footer, matching existing pages and user-provided theme.
+  \fill[darkred] (0,0) rectangle (3.68,.43);
+  \fill[footerred] (3.68,0) rectangle (13.92,.43);
+  \fill[mainred] (13.92,0) rectangle (16,.43);
+  \node[anchor=west,text=white,inner sep=0pt] at (.31,.25)
+    {{\fontsize{9}{11}\selectfont\bfseries CHUYÊN ĐỀ 2}};
+  \node[anchor=center,text=white,inner sep=0pt] at (8,.25)
+    {{\fontsize{9}{11}\selectfont PHÂN TÍCH VÀ DỰ BÁO TỶ GIÁ USD/VND}};
+  \node[anchor=center,text=white,inner sep=0pt] at (15.05,.25)
+    {{\fontsize{8}{10}\selectfont\bfseries\insertframenumber/\inserttotalframenumber}};
+}
+\newcommand{\partdivider}[4]{%
+  \begin{frame}[plain,label=part#1]
+    \noindent\hspace*{-0.72cm}%
+    \begin{tikzpicture}[x=1cm,y=1cm]
+      \specialpagebase
+      \node[anchor=west,text=white,inner sep=0pt] at (.66,8.40)
+        {{\fontsize{24}{29}\selectfont\bfseries PHẦN #1}};
+      \draw[mainred,line width=1.45pt] (4.78,2.78)--(4.78,6.2);
+      \node[anchor=center,text=darkred,inner sep=0pt,text width=4.38cm,align=center]
+        at (2.47,4.52) {{\fontsize{75}{84}\selectfont\bfseries #1}};
+      \node[anchor=west,align=left,inner sep=0pt,text width=10.18cm]
+        at (5.42,4.53)
+        {{\fontsize{22}{26}\selectfont\color{darkred}\bfseries #2}\par\vspace{0.16cm}
+         {\fontsize{11.8}{16}\selectfont\color{darkgray}#3}};
+    \end{tikzpicture}%
+  \end{frame}%
+}
+\newcommand{\tocentry}[4]{%
+  \node[anchor=north west,text=darkred,inner sep=0pt] at (#1,#2)
+    {{\fontsize{26}{29}\selectfont\bfseries #3.}};
+  \node[anchor=north west,inner sep=0pt,text=darkgray,align=left,text width=5.76cm]
+    at ({#1+1.64},#2)
+    {{\fontsize{11.9}{16.1}\selectfont\bfseries #4}};
+}
+\newcommand{\presentationContents}{%
+  \begin{frame}[plain,label=contents]
+  \noindent\hspace*{-0.72cm}%
+  \begin{tikzpicture}[x=1cm,y=1cm]
+     \specialpagebase
+     \node[anchor=west,text=white,inner sep=0pt] at (.65,8.39)
+       {{\fontsize{24}{27}\selectfont\bfseries NỘI DUNG THUYẾT TRÌNH}};
+     \tocentry{.73}{6.91}{I}{Tổng quan và dữ liệu}
+     \tocentry{.73}{5.51}{II}{Mô hình ARIMA}
+     \tocentry{.73}{4.11}{III}{Mô hình ARMA--GARCH}
+     \tocentry{.73}{2.71}{IV}{Không gian trạng thái và\\bộ lọc Kalman}
+     \tocentry{8.48}{6.91}{V}{Mô hình SETAR/TAR}
+     \tocentry{8.48}{5.51}{VI}{{\fontsize{11.2}{15.2}\selectfont Mô hình Markov Switching}}
+     \tocentry{8.48}{4.11}{VII}{So sánh và kết luận}
+  \end{tikzpicture}%
+  \end{frame}%
+}
+\newcommand{\presentationThankYou}{%
+  \begin{frame}[plain,label=thanks]
+  \noindent\hspace*{-0.72cm}%
+  \begin{tikzpicture}[x=1cm,y=1cm]
+     \specialpagebase
+     \node[anchor=center,text=white,inner sep=0pt] at (8,8.40)
+       {{\fontsize{24}{28}\selectfont\bfseries CHUYÊN ĐỀ 2}};
+     \node[anchor=center,text=darkred,align=center,inner sep=0pt,text width=14.6cm]
+       at (8,5.22)
+       {{\fontsize{22.2}{27}\selectfont\bfseries XIN TRÂN TRỌNG CẢM ƠN!}};
+     \node[anchor=center,text=darkgray,align=center,inner sep=0pt,text width=13.6cm]
+       at (8,4.08)
+       {{\fontsize{13.7}{20}\selectfont Nhóm mong nhận được câu hỏi và góp ý từ giảng viên.}};
+     \node[anchor=center,text=darkred,inner sep=0pt] at (8,2.50)
+       {{\fontsize{14}{18}\selectfont Phân tích và dự báo tỷ giá USD/VND}};
+  \end{tikzpicture}%
+  \end{frame}%
+}
+
+\begin{document}
+
+% SLIDE 01 -----------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[mainred] (current page.north west) rectangle ([xshift=0.23cm]current page.south west);
+  \fill[mainred] ([yshift=-2.38cm]current page.north west) rectangle ([yshift=-2.42cm]current page.north east);
+  \fill[softred] ([xshift=-3.2cm,yshift=0.5cm]current page.south east) circle (2.3cm);
+\end{tikzpicture}
+\vspace{0.10cm}\centering
+{\footnotesize\bfseries ĐẠI HỌC QUỐC GIA HÀ NỘI}\\[1pt]
+{\footnotesize\bfseries TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN}\\[1pt]
+{\scriptsize KHOA TOÁN -- CƠ -- TIN HỌC}\\[0.60cm]
+{\color{mainred}\bfseries\large BÁO CÁO TIỂU LUẬN -- CHUYÊN ĐỀ 2}\\[0.21cm]
+{\color{darkred}\bfseries\LARGE PHÂN TÍCH VÀ DỰ BÁO}\\[0.08cm]
+{\color{darkred}\bfseries\LARGE TỶ GIÁ USD/VND}\\[0.25cm]
+{\large Bằng năm mô hình chuỗi thời gian}\\[0.34cm]
+{\small Giảng viên: \textbf{TS. Hoàng Thị Phương Thảo}}\\[0.12cm]
+{\footnotesize Trần Tùng Lâm \enspace $\bullet$ \enspace Nguyễn Thị Nhật Linh \enspace $\bullet$ \enspace Nguyễn Phúc Lợi}\\[0.05cm]
+{\footnotesize Hoàng Thanh Tùng \enspace $\bullet$ \enspace Tống Việt Tú}\\[0.21cm]
+{\small\color{midgray}Hà Nội, 2026}
+\end{frame}
+
+% Redesigned TOC based on the supplied reference.
+\presentationContents
+
+\section{I. Tổng quan và dữ liệu}
+\partdivider{I}{TỔNG QUAN VÀ DỮ LIỆU}{{\fontsize{10.5}{14.7}\selectfont Bài toán nghiên cứu, dữ liệu USD/VND và thiết kế đánh giá}}{}
+
+% SLIDE 02 -----------------------------------------------------------------
+\begin{frame}{Bài toán và năm cách tiếp cận}
+\topic{Câu hỏi nghiên cứu}
+\centering\large\(\boxed{\mathcal F_t\ \longrightarrow\ \widehat P_{t+1\mid t}}\)\\[0.14cm]
+\notegray{Dùng lịch sử giá đóng cửa tới hết phiên $t$ để dự báo giá đóng cửa phiên kế tiếp.}\\[0.25cm]
+\begin{tikzpicture}[node distance=0.13cm]
+\node[flow,text width=2.15cm] (a) {\textbf{ARIMA}\\\scriptsize Phụ thuộc tuyến tính};
+\node[flow,text width=2.15cm,right=of a] (b) {\textbf{ARMA--GARCH}\\\scriptsize Phương sai thay đổi};
+\node[flow,text width=2.15cm,right=of b] (c) {\textbf{Kalman}\\\scriptsize Trạng thái liên tục ẩn};
+\node[flow,text width=2.15cm,right=of c] (d) {\textbf{SETAR}\\\scriptsize Ngưỡng quan sát};
+\node[flow,text width=2.15cm,right=of d] (e) {\textbf{Markov}\\\scriptsize Trạng thái rời rạc ẩn};
+\end{tikzpicture}
+\vspace{0.38cm}
+\begin{beamercolorbox}[wd=\linewidth,sep=0.19cm,rounded=true]{block body}
+\small \textbf{Đối chứng:} Random Walk dự báo $\widehat P_{t+1\mid t}=P_t$; \textbf{không phải mô hình thứ sáu}. Mục tiêu là kiểm tra liệu năm đặc tả phức tạp có cải thiện \textbf{dự báo ngoài mẫu} hay không.
+\end{beamercolorbox}
+\src{Phần I, mục 1, 4.6; Phần II, mục 1}
+\end{frame}
+
+% Phần I tiếp tục: dữ liệu và phương pháp
+
+% SLIDE 03 -----------------------------------------------------------------
+\begin{frame}{Dữ liệu USD/VND và chất lượng nguồn}
+\vspace{0.16cm}\centering
+\kpi{2.784}{Phiên quan sát}{04/01/2016--31/08/2026}\hfill
+\kpi{569}{Dòng bất nhất OHLC}{Đánh dấu, chưa tự sửa}\hfill
+\kpi{1.777}{Giá trị Volume thiếu}{Không dùng làm đầu vào}\par\vspace{0.34cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.52\linewidth}
+\topic{Tệp đầu vào}
+\begin{tabular}{@{}ll@{}}\toprule
+\textbf{Nhóm trường} & \textbf{Tên chuẩn hóa}\\\midrule
+Ngày & Date\\
+Giá & Open, High, Low, Close\\
+Giao dịch & Volume\\
+Thay đổi & Change\_pct\\\bottomrule
+\end{tabular}
+\end{column}
+\begin{column}{0.45\linewidth}
+\small
+\begin{itemize}\setlength{\itemsep}{6pt}
+\item Biến mục tiêu là \textbf{Close} (VND/USD).
+\item \textbf{Không thiếu Close}, không trùng ngày.
+\item Nguồn dữ liệu: Investing.com.
+\end{itemize}
+\end{column}
+\end{columns}
+\src{Phần II, mục 2.1--2.3, Bảng TN.2--TN.3}
+\end{frame}
+
+% SLIDE 04 -----------------------------------------------------------------
+\begin{frame}{Tiền xử lý và hai chuỗi làm việc}
+\vspace{0.09cm}
+\begin{tikzpicture}[every node/.style={font=\small}]
+\node[flow,text width=1.80cm] (raw) at (0.95,0) {\textbf{CSV gốc}\\2.784 phiên};
+\node[flow,text width=2.20cm] (price) at (4.15,0) {\textbf{Chuẩn hóa}\\Ngày, giá, sắp phiên};
+\node[flow,text width=2.55cm] (lp) at (8.40,.68) {\textbf{log\_price}\\ARIMA, Kalman};
+\node[flow,text width=2.55cm] (ret) at (8.40,-.72) {\textbf{log\_return}\\GARCH, SETAR, Markov};
+\draw[arrow] (raw)--(price);
+\draw[arrow] (price.east)--++(.28,0)|-(lp.west);
+\draw[arrow] (price.east)--++(.28,0)|-(ret.west);
+\end{tikzpicture}
+\vspace{0.3cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.48\linewidth}
+\[y_t=\ln P_t\qquad r_t=100(\ln P_t-\ln P_{t-1})\]
+\end{column}
+\begin{column}{.48\linewidth}
+\[\widehat P_{t+1}=P_t\exp\!\left(\frac{\widehat r_{t+1}}{100}\right)\]
+\end{column}
+\end{columns}
+\small\begin{itemize}\setlength{\itemsep}{4pt}
+\item Giữ nguyên lịch phiên; không chèn ngày nghỉ; loại phiên đầu \emph{chỉ trong chuỗi lợi suất}.
+\item Tạo 2.784 quan sát giá và 2.783 quan sát lợi suất. Mọi dự báo được so trên \textbf{VND/USD}.
+\end{itemize}
+\src{Phần I, mục 1.2; Phần II, mục 2.2--2.6}
+\end{frame}
+
+% SLIDE 05 -----------------------------------------------------------------
+\begin{frame}{EDA: xu thế tỷ giá và biến động lợi suất}
+\twoplot{fig01_close}{Hình 1 -- Tỷ giá Close, train 2016--2024}{fig02_returns}{Hình 2 -- Lợi suất logarit, train 2016--2024}
+\vspace{0.19cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.66\linewidth}
+\small\begin{itemize}\setlength{\itemsep}{3pt}
+\item Close có xu thế và tính bền vững rõ rệt.
+\item Lợi suất dao động quanh 0, có cụm biến động lớn và quan sát cực trị.
+\end{itemize}
+\end{column}
+\begin{column}{0.32\linewidth}
+\begin{beamercolorbox}[wd=\linewidth,sep=.15cm,rounded=true]{block body}
+\centering{\Large\color{mainred}\bfseries 17,475}\\[-3pt]{\scriptsize Excess kurtosis lợi suất train}
+\end{beamercolorbox}
+\end{column}
+\end{columns}
+\src{Phần II, mục 4, Bảng TN.7, Hình 1--3}
+\end{frame}
+
+% SLIDE 06 -----------------------------------------------------------------
+\begin{frame}{Các kiểm định tiền mô hình hóa}
+\vspace{0.12cm}
+{\small\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}p{2.8cm}p{2.8cm}X@{}}
+\rowcolor{softred}\textbf{Kiểm định} & \textbf{Kết quả train} & \textbf{Hàm ý trong nghiên cứu}\\\midrule
+ADF: log\_price & $p\approx0{,}908$ & Chưa bác bỏ nghiệm đơn vị; xem xét sai phân $d=1$.\\
+ADF: log\_return & $p\approx1{,}815\cdot10^{-28}$ & Bác bỏ nghiệm đơn vị theo đặc tả ADF đã dùng.\\
+Ljung--Box & $p$ rất nhỏ & Lợi suất có phụ thuộc ở các độ trễ xét.\\
+ARCH--LM(10) & $p\approx1{,}049\cdot10^{-53}$ & Xem xét phương sai có điều kiện thay đổi.\\\bottomrule
+\end{tabularx}}
+\vspace{0.26cm}
+\takeaway{ADF và ARCH--LM định hướng thiết kế; \emph{không tự chứng minh} tính dừng tuyệt đối hay hiệu quả dự báo của một mô hình.}
+\src{Phần II, mục 5, Bảng TN.9--TN.11}
+\end{frame}
+
+% SLIDE 07 -----------------------------------------------------------------
+\begin{frame}{Chia dữ liệu theo thời gian và dự báo cuốn chiếu}
+\vspace{0.14cm}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\fill[mainred] (0,0) rectangle (7.0,1.02);
+\fill[footerred] (7.06,0) rectangle (9.18,1.02);
+\fill[darkred] (9.24,0) rectangle (11.86,1.02);
+\node[white,align=center] at (3.5,0.55) {\bfseries Train\\\scriptsize 2016--2024 · 2.347 phiên};
+\node[white,align=center] at (8.12,0.55) {\bfseries Validation\\\scriptsize 2025 · 262 phiên};
+\node[white,align=center] at (10.56,0.55) {\bfseries Test\\[-1pt]\tiny 01--08/2026\\[-2pt]\tiny 175 phiên};
+\end{tikzpicture}\par
+\vspace{0.34cm}
+\topic{Tại mỗi phiên test: dự báo phải đi trước dữ liệu thực tế}
+\centering
+\procflow
+{Thông tin}{Có đến phiên $t$}
+{Dự báo}{Giá phiên $t+1$}
+{Quan sát}{Giá thực $P_{t+1}$}
+{Cập nhật}{Bộ lọc / phần dư}
+\vspace{0.26cm}
+\notegray{Dự báo một bước với gốc dịch chuyển, không phải dự báo cả 175 phiên từ một mốc cố định. Cấu hình không được chọn lại theo test.}
+\src{Phần II, mục 3, Bảng TN.6}
+\end{frame}
+
+% SLIDE 08 -----------------------------------------------------------------
+\begin{frame}{Random Walk và tiêu chí đánh giá}
+\topic{Mốc đối chứng bắt buộc}
+\centering\[\boxed{\widehat P^{\text{RW}}_{t+1\mid t}=P_t}\]
+\vspace{0.10cm}
+\kpi{18,56286}{MAE test}{VND/USD}\hspace{0.35cm}\kpi{30,05340}{RMSE test}{VND/USD}\par\vspace{0.22cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.51\linewidth}
+\[\mathrm{MAE}=\frac1n\sum_{t=1}^n|e_t|\]
+\end{column}
+\begin{column}{0.45\linewidth}
+\[\mathrm{RMSE}=\sqrt{\frac1n\sum_{t=1}^n e_t^2}\]
+\end{column}
+\end{columns}
+\vspace{0.10cm}
+\small\centering $\mathrm{RMSE\ ratio}=\mathrm{RMSE}_{\mathrm{model}}/\mathrm{RMSE}_{\mathrm{RW}}$\par
+\takeaway{RMSE thấp hơn về số học không tự chứng minh khác biệt có ý nghĩa thống kê.}
+\vspace{-0.13cm}
+\src{Phần II, mục 6 và 8.2, Bảng TN.12}
+\end{frame}
+
+\section{II. Mô hình ARIMA}
+\partdivider{II}{MÔ HÌNH ARIMA}{Cơ sở lý thuyết và kết quả thực nghiệm}{}
+
+% SLIDE 09 -----------------------------------------------------------------
+\begin{frame}{ARIMA: khái niệm và phương trình}
+\vspace{0.17cm}
+\centering\[\boxed{\phi(B)(1-B)^d y_t=c+\theta(B)\varepsilon_t}\]
+\vspace{0.12cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.32\linewidth}
+\begin{block}{AR($p$)}\small Phụ thuộc \textbf{tuyến tính} vào $p$ giá trị trễ.\end{block}
+\end{column}
+\begin{column}{.32\linewidth}
+\begin{block}{I($d$)}\small Sai phân cấp $d$ để xét chuỗi có tính dừng.\end{block}
+\end{column}
+\begin{column}{.32\linewidth}
+\begin{block}{MA($q$)}\small Phụ thuộc vào $q$ \textbf{nhiễu đổi mới} trễ.\end{block}
+\end{column}
+\end{columns}
+\vspace{0.24cm}
+\small $B$ là toán tử trễ, $y_t=\ln P_t$; kiểm định ADF trên dữ liệu USD/VND gợi ý xét $d=1$.
+\takeaway{Điều kiện nhân quả/khả nghịch và chẩn đoán phần dư là điều kiện kỹ thuật; không bảo đảm dự báo ngoài mẫu tốt.}
+\src{Phần I, mục 4.1.1--4.1.5}
+\end{frame}
+
+% SLIDE 10 -----------------------------------------------------------------
+\begin{frame}{ARIMA: Box--Jenkins và dự báo một bước}
+\vspace{0.18cm}
+\centering
+\procflow
+{Nhận dạng}{ADF, ACF/PACF}
+{Ước lượng}{MLE; AIC/BIC}
+{Chẩn đoán}{Hội tụ; Ljung--Box}
+{Lựa chọn}{RMSE trên val}
+\vspace{0.41cm}
+\topic{Dự báo trên thang logarit khi $d=1$}
+\centering\[\widehat y_{t+1\mid t}=y_t+\widehat{\Delta y}_{t+1\mid t}\]
+\small\begin{itemize}\setlength{\itemsep}{5pt}
+\item Chọn $p,q$ từ ứng viên hội tụ, thỏa điều kiện mô hình và có sai số val phù hợp.
+\item Chuyển dự báo về giá gốc trước khi tính MAE/RMSE.
+\end{itemize}
+\takeaway{AIC/BIC không thay thế kiểm tra phần dư và sai số ngoài mẫu.}
+\vspace{-0.13cm}
+\src{Phần I, mục 4.1.6--4.1.8; Phần II, mục 7.1}
+\end{frame}
+
+% SLIDE 11 -----------------------------------------------------------------
+\begin{frame}{ARIMA: lựa chọn cấu hình (3,1,1)}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.62\linewidth}
+\bigfig{p1_2_validation}{\linewidth}{4.17cm}
+\centering{\scriptsize\color{midgray}Hình P1.2 -- RMSE validation của ứng viên hợp lệ}
+\end{column}
+\begin{column}{.35\linewidth}
+\topic{Quy tắc lựa chọn}
+\small\begin{enumerate}\setlength{\itemsep}{7pt}
+\item Thử $25$ cấu hình $p,q\in\{0,\dots,4\}$.
+\item Loại mô hình không hợp lệ / không hội tụ.
+\item Chấp nhận RMSE val trong vùng \textbf{1\%} của tốt nhất, ưu tiên ít tham số.
+\end{enumerate}
+\vspace{0.1cm}
+\begin{beamercolorbox}[wd=\linewidth,sep=.13cm,rounded=true]{block body}
+\centering\textbf{ARIMA(3,1,1)}\\[3pt]{\color{mainred}\bfseries RMSE val $\approx43{,}1253$}
+\end{beamercolorbox}
+\end{column}
+\end{columns}
+\src{Phần II, mục 7.1.2--7.1.4, Hình P1.2, Bảng P1.1--P1.3}
+\end{frame}
+
+% SLIDE 12 -----------------------------------------------------------------
+\begin{frame}{ARIMA: dự báo test và khoảng 95\%}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.68\linewidth}
+\bigfig{p1_3_forecast}{\linewidth}{4.25cm}
+\centering{\scriptsize\color{midgray}Hình P1.3 -- Thực tế, dự báo một bước và khoảng 95\%}
+\end{column}
+\begin{column}{.29\linewidth}
+\topic{Tập test: 175 phiên}
+\small\begin{tabular}{@{}lr@{}}\toprule
+& \textbf{ARIMA}\\\midrule
+MAE & 18,7363\\
+RMSE & 30,4392\\
+Bao phủ 95\% & 95,43\%\\\bottomrule
+\end{tabular}
+\vspace{0.27cm}
+\begin{beamercolorbox}[wd=\linewidth,sep=.13cm,rounded=true]{block body}
+\small RMSE \textbf{cao hơn RW khoảng 1,28\%} (RW: 30,0534).
+\end{beamercolorbox}
+\end{column}
+\end{columns}
+\takeaway{Khoảng dự báo có độ bao phủ gần danh nghĩa, nhưng dự báo điểm không vượt Random Walk.}
+\src{Phần II, mục 7.1.5--7.1.6, Bảng P1.4--P1.5}
+\end{frame}
+
+% SLIDE 13 -----------------------------------------------------------------
+\begin{frame}{ARIMA: chẩn đoán và độ vững}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.57\linewidth}
+\bigfig{p1_4_diagnostic}{\linewidth}{3.87cm}
+\centering{\scriptsize\color{midgray}Hình P1.4 -- Phần dư và phân phối sai số}
+\end{column}
+\begin{column}{.40\linewidth}
+\topic{Kiểm tra sau ước lượng}
+\small\begin{itemize}\setlength{\itemsep}{8pt}
+\item Phần dư train còn đuôi dày / hiệu ứng ARCH.
+\item Sai số dự báo test còn tự tương quan.
+\item HAC trên chênh lệch loss bình phương với RW: $p\approx0{,}469$.
+\item Bootstrap 95\% của $\Delta\mathrm{RMSE}$ chứa 0.
+\end{itemize}
+\end{column}
+\end{columns}
+\takeaway{ARIMA nắm bắt quan hệ tuyến tính ngắn hạn nhưng chưa chứng minh được lợi thế dự báo một bước so với RW.}
+\src{Phần II, mục 7.1.6--7.1.10, Bảng P1.6--P1.8}
+\end{frame}
+
+\section{III. Mô hình ARMA--GARCH}
+\partdivider{III}{MÔ HÌNH ARMA--GARCH}{Trung bình, phương sai có điều kiện và dự báo}{}
+
+% SLIDE 14 -----------------------------------------------------------------
+\begin{frame}{ARMA--GARCH: trung bình và phương sai}
+\topic{Hai thành phần được mô hình hóa đồng thời}
+\centering
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.48\linewidth}
+\begin{block}{Trung bình có điều kiện (ARMA)}
+\[r_t=\mu_t+\varepsilon_t\]
+\centering\small Dự báo \textbf{lợi suất}.
+\end{block}
+\end{column}
+\begin{column}{.48\linewidth}
+\begin{block}{Phương sai có điều kiện (GARCH)}
+\[\varepsilon_t=\sqrt{h_t}\,z_t\]
+\[h_t=\omega+\alpha\varepsilon_{t-1}^2+\beta h_{t-1}\]
+\centering\small Dự báo \textbf{độ biến động}.
+\end{block}
+\end{column}
+\end{columns}
+\vspace{0.28cm}
+\small\begin{itemize}\setlength{\itemsep}{6pt}
+\item $\omega$: mức nền; $\alpha$: tác động cú sốc mới; $\beta$: mức duy trì của biến động.
+\item Với GARCH(1,1), $\omega>0$, $\alpha,\beta\geq0$ và $\alpha+\beta<1$ là điều kiện quen thuộc cho phương sai vô điều kiện hữu hạn dưới giả định phù hợp.
+\end{itemize}
+\takeaway{Mô tả rủi ro/biến động tốt hơn không tự động tạo dự báo giá chính xác hơn.}
+\vspace{-0.13cm}
+\src{Phần I, mục 4.2.1--4.2.3}
+\end{frame}
+
+% SLIDE 15 -----------------------------------------------------------------
+\begin{frame}{ARMA--GARCH: ước lượng và dự báo phân phối}
+\vspace{0.06cm}
+\procflow
+{Ước lượng}{ARMA + GARCH}
+{Phân phối}{Student--$t$}
+{Phân vị}{Khoảng 95\%}
+{Chuyển đổi}{VND/USD}
+\vspace{0.31cm}
+\centering\[\boxed{\widehat P^{\mathrm{median}}_{t+1}=P_t\exp\!\left(\frac{\widehat r_{t+1}}{100}\right)}\]
+\vspace{0.10cm}
+\small\begin{itemize}\setlength{\itemsep}{6pt}
+\item Student--$t$ chuẩn hóa cho phép nhiễu đuôi dày; \emph{không} tự áp dụng công thức kỳ vọng log-chuẩn cho Student--$t$.
+\item Đánh giá điểm bằng MAE/RMSE; đánh giá biến động bằng QLIKE trên đại lượng thay thế và kiểm tra khoảng/VaR.
+\end{itemize}
+\src{Phần I, mục 4.2.4--4.2.6}
+\end{frame}
+
+% SLIDE 16 -----------------------------------------------------------------
+\begin{frame}{ARMA--GARCH: cấu hình và tham số cuối}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.54\linewidth}
+\topic{Chọn trên validation}
+\small\begin{itemize}\setlength{\itemsep}{5pt}
+\item 4 cấu trúc ARMA $\times$ 2 phân phối nhiễu = \textbf{8 ứng viên}.
+\item Cố định GARCH(1,1); chọn theo \textbf{MAE của giá} trên val.
+\item Đặc tả được chọn: \textbf{ARMA(0,0)--GARCH(1,1), Student--$t$}.
+\end{itemize}
+\end{column}
+\begin{column}{.43\linewidth}
+{\small\renewcommand{\arraystretch}{1.27}\begin{tabular}{@{}lr@{}}\toprule
+Tham số & Ước lượng cuối\\\midrule
+$\mu$ & $-0{,}000118$\\
+$\omega$ & $0{,}000072$\\
+$\alpha$ & $0{,}201396$\\
+$\beta$ & $0{,}796878$\\
+$\nu$ & $3{,}404532$\\
+$\alpha+\beta$ & $0{,}998273$\\\bottomrule
+\end{tabular}}
+\end{column}
+\end{columns}
+\vspace{0.08cm}
+\centering\[r_t\approx-0{,}000118+\varepsilon_t,\quad h_t=0{,}000072+0{,}201396\varepsilon_{t-1}^2+0{,}796878h_{t-1}\]
+\takeaway{$\alpha+\beta$ rất sát 1 và gần ràng buộc tối ưu; thận trọng khi diễn giải tính dai dẳng của phương sai.}
+\vspace{-0.13cm}
+\src{Phần II, mục 7.2.2--7.2.3, Bảng P2.1--P2.2}
+\end{frame}
+
+% SLIDE 17 -----------------------------------------------------------------
+\begin{frame}{ARMA--GARCH: dự báo giá và độ biến động}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.65\linewidth}
+\bigfig{p2_2_garch_pi}{\linewidth}{4.14cm}
+\centering{\scriptsize\color{midgray}Hình P2.2 -- Khoảng giá 95\% và độ lệch chuẩn GARCH}
+\end{column}
+\begin{column}{.32\linewidth}
+\topic{Test: 175 phiên}
+\small\begin{tabular}{@{}lr@{}}\toprule
+MAE & 18,56303\\
+RMSE & 30,05206\\
+RW RMSE & 30,05340\\
+Bao phủ & 93,714\%\\
+Độ rộng & 94,53\\\bottomrule
+\end{tabular}
+\vspace{0.23cm}
+\small \textbf{QLIKE} (trên đại lượng thay thế):\\
+GARCH: $-3{,}80869$\\
+Phương sai cố định: $-3{,}26101$.
+\end{column}
+\end{columns}
+\takeaway{Dự báo điểm gần như bằng RW; mô hình vẫn cung cấp dự báo phương sai biến thiên theo thời gian.}
+\src{Phần II, mục 7.2.5--7.2.6, Bảng P2.4--P2.5}
+\end{frame}
+
+% SLIDE 18 -----------------------------------------------------------------
+\begin{frame}{ARMA--GARCH: VaR và chẩn đoán}
+\topic{Kiểm tra VaR đuôi trái ở mức 5\%}
+\centering
+\kpi{5\%}{Tần suất danh nghĩa}{Kỳ vọng theo mô hình}\hfill
+\kpi{15/175}{Số phiên vi phạm}{Tương ứng 8,571\%}\hfill
+\kpi{0,03685}{$p$ nhị thức hai phía}{Dưới giả định độc lập}\par\vspace{0.34cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.48\linewidth}
+\begin{block}{Phương trình trung bình}\small Ljung--Box trên phần dư chuẩn hóa còn bác bỏ giả thuyết không tự tương quan ở một số độ trễ.\end{block}
+\end{column}
+\begin{column}{.48\linewidth}
+\begin{block}{Phương trình phương sai}\small ARCH--LM và Ljung--Box bình phương phần dư chưa ghi nhận ARCH còn sót tại độ trễ đã xét.\end{block}
+\end{column}
+\end{columns}
+\takeaway{Khoảng hẹp và QLIKE thấp hơn không đồng nghĩa ngưỡng rủi ro đuôi được hiệu chỉnh tốt; chưa có kiểm định loss ghép cặp về dự báo giá so với RW.}
+\src{Phần II, mục 7.2.4, 7.2.7--7.2.8, Bảng P2.3, P2.6}
+\end{frame}
+
+\section{IV. Không gian trạng thái và Kalman}
+\partdivider{IV}{{\fontsize{19}{24}\selectfont KHÔNG GIAN TRẠNG THÁI\\VÀ BỘ LỌC KALMAN}}{Trạng thái ẩn, lọc và dự báo một bước}{}
+
+% SLIDE 19 -----------------------------------------------------------------
+\begin{frame}{Mô hình không gian trạng thái: cấu trúc ẩn}
+\topic{Hai phương trình của mô hình tuyến tính Gaussian}
+\centering
+\[\boxed{\begin{aligned}y_t&=Z_t\alpha_t+\varepsilon_t, &\varepsilon_t&\sim N(0,H_t)\\
+\alpha_{t+1}&=T_t\alpha_t+\eta_t, &\eta_t&\sim N(0,Q_t)
+\end{aligned}}\]
+\vspace{0.12cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.52\linewidth}
+\topic{Ý nghĩa}
+\small\begin{itemize}\setlength{\itemsep}{5pt}
+\item $\alpha_t$ là trạng thái ẩn: mức hoặc mức + xu hướng.
+\item $H_t$: nhiễu quan sát; $Q_t$: nhiễu của quá trình chuyển trạng thái.
+\end{itemize}
+\end{column}
+\begin{column}{.45\linewidth}
+\topic{Ba cấu trúc khảo sát}
+\small\begin{tabular}{@{}ll@{}}\toprule
+Local Level & Mức ẩn\\
+Local Linear Trend & Mức + độ dốc\\
+Smooth Trend & Xu hướng trơn\\\bottomrule
+\end{tabular}
+\end{column}
+\end{columns}
+\takeaway{Không thể kết luận mô hình nhiều trạng thái ẩn hơn sẽ cho dự báo tốt hơn.}
+\src{Phần I, mục 4.3.1--4.3.2, Bảng LT.1}
+\end{frame}
+
+% SLIDE 20 -----------------------------------------------------------------
+\begin{frame}{Bộ lọc Kalman: bốn bước cập nhật}
+\vspace{0.08cm}
+\centering
+\procflow
+{Dự đoán}{$a^-_t$, $C^-_t$}
+{Đổi mới}{$v_t=y_t-Z_ta^-_t$}
+{Tính Gain}{Ma trận $K_t$}
+{Cập nhật}{$a_t^+$, $C_t^+$}
+\vspace{0.42cm}
+\[\boxed{K_t=C_t^-Z_t^{\mathsf T}\!\left(Z_tC_t^-Z_t^{\mathsf T}+H_t\right)^{-1}}\]
+\[\boxed{a_t^+=a_t^-+K_t\bigl(y_t-Z_ta_t^-\bigr)}\]
+\vspace{0.11cm}
+\small $K_t$ phân bổ trọng số giữa ước lượng trước cập nhật và thông tin mới. Trong Local Level vô hướng, $K_t\to1$ khi nhiễu quan sát $H$ rất nhỏ so với độ bất định trạng thái.
+\src{Phần I, mục 4.3.3--4.3.4}
+\end{frame}
+
+% SLIDE 21 -----------------------------------------------------------------
+\begin{frame}{Kalman: lọc, làm trơn và dự báo ngoài mẫu}
+\vspace{0.18cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.48\linewidth}
+\begin{block}{Filtered / predicted state}
+\small $a_{t\mid t}$ chỉ dùng $y_1,\ldots,y_t$; từ đây lập dự báo cho phiên $t+1$. \textbf{Được phép} sử dụng khi đánh giá ngoài mẫu.
+\end{block}
+\end{column}
+\begin{column}{.48\linewidth}
+\begin{block}{Smoothed state}
+\small $a_{t\mid T}$ dùng cả $y_{t+1},\ldots,y_T$. Phù hợp nghiên cứu lịch sử, \textbf{không được dùng} để giả lập dự báo tại $t$.
+\end{block}
+\end{column}
+\end{columns}
+\vspace{0.20cm}
+\topic{Chuyển dự báo logarit sang kỳ vọng giá (log-Gaussian)}
+\centering\[\boxed{E(P_{t+1}\mid\mathcal F_t)=\exp\!\left(m_{t+1}+\frac12s_{t+1}^2\right)}\]
+\vspace{0.15cm}
+\small Trên test: tạo dự báo trước khi cập nhật trạng thái; \texttt{append(refit=False)} \textbf{không ước lượng lại tham số}.
+\src{Phần I, mục 4.3.5--4.3.7; Phần II, mục 7.3.2}
+\end{frame}
+
+% SLIDE 22 -----------------------------------------------------------------
+\begin{frame}{Kalman: chọn Local Level và giải thích Gain}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.55\linewidth}
+\topic{RMSE validation theo cấu trúc}
+\small\renewcommand{\arraystretch}{1.40}
+\begin{tabular}{@{}lr@{}}\toprule
+Cấu trúc & RMSE (VND/USD)\\\midrule
+\rowcolor{softred}\textbf{Local Level} & \textbf{43,2512}\\
+Local Linear Trend & 43,9451\\
+Smooth Trend & 49,4510\\
+Random Walk & 43,2528\\\bottomrule
+\end{tabular}
+\end{column}
+\begin{column}{.41\linewidth}
+\topic{Tham số train + val}
+\small\renewcommand{\arraystretch}{1.42}
+\begin{tabular}{@{}ll@{}}\toprule
+$H$ & $6{,}764\cdot10^{-12}$\\
+$Q$ & $1{,}893\cdot10^{-6}$\\
+$H/Q$ & $3{,}573\cdot10^{-6}$\\
+$K_t$ & $\approx0{,}999996$\\\bottomrule
+\end{tabular}
+\end{column}
+\end{columns}
+\vspace{0.34cm}
+\begin{beamercolorbox}[wd=\linewidth,sep=.20cm,rounded=true]{block body}
+\centering \textbf{$K\approx1$} $\Rightarrow$ trạng thái sau lọc gần bằng tỷ giá logarit mới quan sát $\Rightarrow$ dự báo của \textbf{Local Level gần Random Walk}.
+\end{beamercolorbox}
+\src{Phần II, mục 7.3.3--7.3.4, Bảng P3.1--P3.2}
+\end{frame}
+
+% SLIDE 23 -----------------------------------------------------------------
+\begin{frame}{Kalman: dự báo test và kiểm định}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.64\linewidth}
+\bigfig{p3_1_kalman_pi}{\linewidth}{4.02cm}
+\centering{\scriptsize\color{midgray}Hình P3.1 -- Dự báo Local Level và khoảng 95\%}
+\end{column}
+\begin{column}{.33\linewidth}
+\topic{Kalman / Random Walk}
+\small\begin{tabular}{@{}lrr@{}}\toprule
+& Kalman & RW\\\midrule
+MAE &18,568&18,563\\
+RMSE&30,055&30,053\\
+\end{tabular}
+\vspace{0.17cm}
+\small Bao phủ: \textbf{94,86\%}\\
+Độ rộng: \textbf{141,57} VND\\
+HAC (loss bình phương): \textbf{$p\approx0{,}553$}.
+\end{column}
+\end{columns}
+\takeaway{RMSE không có khác biệt được chứng minh theo kiểm định HAC; $\Delta$MAE dương rất nhỏ có ý nghĩa theo kiểm định riêng đã công bố.}
+\src{Phần II, mục 7.3.5--7.3.10, Bảng P3.3--P3.8}
+\end{frame}
+
+\section{V. Mô hình SETAR/TAR}
+\partdivider{V}{MÔ HÌNH SETAR/TAR}{Cấu trúc ngưỡng và kết quả thực nghiệm}{}
+
+% SLIDE 24 -----------------------------------------------------------------
+\begin{frame}{SETAR/TAR: hồi quy theo ngưỡng quan sát}
+\topic{Hai phương trình theo dấu của lợi suất trễ so với ngưỡng}
+\centering\[\boxed{r_t=\begin{cases}
+a_{0,L}+\displaystyle\sum_{i=1}^p a_{i,L}r_{t-i}+\varepsilon_{t,L},& r_{t-d}\leq\gamma,\\[4pt]
+a_{0,H}+\displaystyle\sum_{i=1}^p a_{i,H}r_{t-i}+\varepsilon_{t,H},& r_{t-d}>\gamma.
+\end{cases}}\]
+\vspace{0.15cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.48\linewidth}
+\small\textbf{TAR:} chế độ do biến ngưỡng quan sát được quyết định. \textbf{SETAR:} ngưỡng là trễ của chính chuỗi đang phân tích.
+\end{column}
+\begin{column}{.48\linewidth}
+\small $p$: bậc AR; $d$: độ trễ ngưỡng; $\gamma$: ngưỡng chia \textbf{Low / High}. Không đồng nhất Low/High với tỷ giá giảm/tăng.
+\end{column}
+\end{columns}
+\takeaway{Khác Markov, chế độ SETAR được chọn bằng một điều kiện quan sát, không qua xác suất trạng thái ẩn.}
+\vspace{-0.13cm}
+\src{Phần I, mục 4.4.1--4.4.2}
+\end{frame}
+
+% SLIDE 25 -----------------------------------------------------------------
+\begin{frame}{SETAR: tìm ngưỡng và thiết kế dự báo}
+\vspace{0.14cm}
+\centering
+\procflow
+{Chọn $p,d$}{Lưới trên train}
+{Tìm ngưỡng}{$\gamma$: tối thiểu SSR}
+{Đánh giá}{RMSE trên val}
+{Ước lượng lại}{Train + val}
+\vspace{0.33cm}
+\small\begin{itemize}\setlength{\itemsep}{7pt}
+\item Ngưỡng hợp lệ phải có đủ quan sát ở mỗi chế độ và ma trận thiết kế đủ hạng.
+\item Chế độ phiên kế tiếp được xác định từ $r_{t-d}$; dự báo theo hệ số AR của chế độ đó.
+\item Chuyển về mức tỷ giá và dùng \textbf{smearing theo chế độ} để giảm sai lệch do chuyển thang phi tuyến.
+\end{itemize}
+\takeaway{Chưa thực hiện kiểm định ngưỡng chuyên biệt; việc giảm SSR chưa chứng minh chắc chắn hiệu ứng ngưỡng tồn tại.}
+\src{Phần I, mục 4.4.3--4.4.7; Phần II, mục 7.4.1}
+\end{frame}
+
+% SLIDE 26 -----------------------------------------------------------------
+\begin{frame}{SETAR: cấu hình (6;4) và hai chế độ}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.64\linewidth}
+\bigfig{p4_1_threshold}{\linewidth}{3.77cm}
+\centering{\scriptsize\color{midgray}Hình P4.1 -- Hồ sơ SSR theo ngưỡng, train và train + val}
+\end{column}
+\begin{column}{.33\linewidth}
+\topic{Đặc tả cuối}
+\small\textbf{SETAR($p=6,d=4$)}\\[5pt]
+Ngưỡng: $\gamma\approx -0{,}038808$ điểm \%.
+\vspace{0.23cm}
+\small\renewcommand{\arraystretch}{1.28}
+\begin{tabular}{@{}lrr@{}}\toprule
+& Low & High\\\midrule
+Train + val &624&1.974\\
+Test &53&122\\\bottomrule
+\end{tabular}
+\end{column}
+\end{columns}
+\takeaway{Các hệ số giữa hai chế độ khác nhau về số học, nhưng chưa có kiểm định ngưỡng riêng để xác nhận cấu trúc này.}
+\src{Phần II, mục 7.4.2--7.4.3, Hình P4.1--P4.2, Bảng P4.2, P4.6}
+\end{frame}
+
+% SLIDE 27 -----------------------------------------------------------------
+\begin{frame}{SETAR: dự báo test, khoảng và hạn chế}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.67\linewidth}
+\bigfig{p4_3_setar_pi}{\linewidth}{4.02cm}
+\centering{\scriptsize\color{midgray}Hình P4.3 -- Dự báo SETAR và khoảng kinh nghiệm 95\%}
+\end{column}
+\begin{column}{.30\linewidth}
+\topic{Kết quả test}
+\small\begin{tabular}{@{}lr@{}}\toprule
+MAE & 19,4838\\
+RMSE & 30,8688\\
+RW RMSE & 30,0534\\
+Bao phủ & 96,00\%\\
+Độ rộng & 148,61\\\bottomrule
+\end{tabular}
+\vspace{0.18cm}\small Sai số test còn tự tương quan và hiệu ứng ARCH.
+\end{column}
+\end{columns}
+\takeaway{Lợi thế trên validation không duy trì trên test: SETAR có cả MAE và RMSE cao hơn Random Walk.}
+\src{Phần II, mục 7.4.3--7.4.6, Bảng P4.4--P4.10}
+\end{frame}
+
+\section{VI. Mô hình Markov Switching}
+\partdivider{VI}{MÔ HÌNH\\MARKOV SWITCHING}{Trạng thái ẩn và chuyển đổi chế độ}{}
+
+% MS-AR source: slides_ms_ar_usdvnd_2026.pdf (8 slides), also report part II 7.5.
+% SLIDE M5-01 -------------------------------------------------------------
+\begin{frame}{Markov Switching: mục tiêu và phạm vi}
+\vspace{0.18cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.54\linewidth}
+\topic{Bài toán nghiên cứu}
+\small Mô tả sự thay đổi \textbf{chế độ biến động} của lợi suất log USD/VND; đồng thời lập dự báo tỷ giá \textbf{một phiên trước} trên tập test năm 2026.\par
+\vspace{0.28cm}
+\topic{Dữ liệu dùng để đánh giá}
+\small Mẫu ước lượng đến hết năm 2025 (gộp train và validation); năm 2026 giữ làm \textbf{test ngoài mẫu}.
+\end{column}
+\begin{column}{.43\linewidth}
+\begin{beamercolorbox}[wd=\linewidth,sep=.23cm,rounded=true]{block body}
+\centering{\Huge\bfseries\color{darkred}MS--AR(2)}\\[.12cm]
+{\small Hai trạng thái ẩn, tự hồi quy bậc hai}
+\end{beamercolorbox}
+\vspace{.26cm}
+\small \textbf{$K=2$} được ấn định trước ước lượng; trạng thái biến động cao/thấp \textbf{không có nhãn sẵn} trong dữ liệu.
+\end{column}
+\end{columns}
+\vspace{.32cm}
+\takeaway{Đối chiếu khả năng dự báo một bước, nhưng vẫn phân biệt mục tiêu phân loại chế độ với độ chính xác mức tỷ giá.}
+\src{Phần II, mục 7.5.1--7.5.3; MS--AR 2026, tr. 1}
+\end{frame}
+
+% SLIDE M5-02 -------------------------------------------------------------
+\begin{frame}{Hai trạng thái ẩn và xác suất chuyển}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.52\linewidth}
+\topic{Thiết kế mô hình}
+\begin{itemize}\setlength{\itemsep}{4pt}
+\item $S_t\in\{H,L\}$ không được quan sát trực tiếp.
+\item Chọn \textbf{$K=2$} trước khi ước lượng; gắn nhãn cao/thấp \emph{sau ước lượng}, dựa vào $\sigma$.
+\item Bộ lọc và bộ làm trơn xác định xác suất trạng thái theo tập thông tin khác nhau.
+\end{itemize}
+\vspace{.20cm}
+\begin{tikzpicture}[node distance=1.18cm]
+\node[flow,text width=1.63cm,minimum height=.74cm](h){\textbf{High}\\\scriptsize Biến động cao};
+\node[flow,text width=1.63cm,minimum height=.74cm,right=of h](l){\textbf{Low}\\\scriptsize Biến động thấp};
+\draw[arrow,bend left=25](h.north east) to node[above]{\scriptsize$11{,}06\%$}(l.north west);
+\draw[arrow,bend left=25](l.south west) to node[below]{\scriptsize$8{,}63\%$}(h.south east);
+\end{tikzpicture}
+\end{column}
+\begin{column}{.45\linewidth}
+\topic{Ma trận chuyển tiếp ước lượng}
+\[
+\boxed{\mathbf P=\begin{pmatrix}
+0{,}889435&0{,}110565\\
+0{,}086334&0{,}913666
+\end{pmatrix}}
+\]
+\vspace{.08cm}
+{\scriptsize Hàng: $S_{t-1}$; cột: $S_t$ (thứ tự Cao, Thấp).}\\[.22cm]
+\small\begin{tabular}{@{}lcc@{}}\toprule
+ & Cao & Thấp\\\midrule
+Xác suất duy trì & 88,94\% & 91,37\%\\
+Kỳ vọng số phiên & 9,04 & 11,58\\\bottomrule
+\end{tabular}
+\end{column}
+\end{columns}
+\src{Phần II, mục 7.5.2--7.5.4, Bảng P5.2; MS--AR 2026, tr. 2}
+\end{frame}
+
+% SLIDE M5-03 -------------------------------------------------------------
+\begin{frame}{Ma trận chuyển tiếp: cách đọc kết quả}
+\centering
+\[\boxed{\mathbf P=\begin{pmatrix}
+0{,}889435&0{,}110565\\
+0{,}086334&0{,}913666
+\end{pmatrix}}\]
+\vspace{.08cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.48\linewidth}
+\begin{block}{Từ chế độ biến động cao}
+\small\begin{itemize}\setlength{\itemsep}{5pt}
+\item Giữ chế độ \textbf{cao}: $88{,}94\%$.
+\item Chuyển sang \textbf{thấp}: $11{,}06\%$.
+\item Thời gian kỳ vọng: \textbf{9,04 phiên}.
+\end{itemize}
+\end{block}
+\end{column}
+\begin{column}{.48\linewidth}
+\begin{block}{Từ chế độ biến động thấp}
+\small\begin{itemize}\setlength{\itemsep}{5pt}
+\item Giữ chế độ \textbf{thấp}: $91{,}37\%$.
+\item Chuyển sang \textbf{cao}: $8{,}63\%$.
+\item Thời gian kỳ vọng: \textbf{11,58 phiên}.
+\end{itemize}
+\end{block}
+\end{column}
+\end{columns}
+\vspace{.22cm}
+\[
+\mathbb{E}(D_i)=\frac{1}{1-p_{ii}}
+\]
+\notegray{Hai hàng tương ứng chế độ ở $t-1$, hai cột tương ứng chế độ ở $t$.}
+\src{Phần II, mục 7.5.4, Bảng P5.2; MS--AR 2026, tr. 3}
+\end{frame}
+
+% SLIDE M5-04 -------------------------------------------------------------
+\begin{frame}{MS--AR(2): đặc tả và cách dự báo}
+\topic{Trung bình và phương sai thay đổi theo trạng thái}
+\vspace{-.10cm}
+\begin{align*}
+r_t & = \mu_{S_t}+\phi_{1,S_t}\bigl(r_{t-1}-\mu_{S_{t-1}}\bigr) \\
+    & \quad +\phi_{2,S_t}\bigl(r_{t-2}-\mu_{S_{t-2}}\bigr)+\varepsilon_t,\\[-1pt]
+\varepsilon_t\mid S_t & \sim\mathcal N\bigl(0,\sigma_{S_t}^{2}\bigr).
+\end{align*}
+\vspace{-.08cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.48\linewidth}
+\topic{Ước lượng tham số}
+\small\begin{itemize}\setlength{\itemsep}{3pt}
+\item $\mu$, AR(1), AR(2), $\sigma^2$ và ma trận $\mathbf P$ cùng ước lượng bằng \textbf{maximum likelihood}.
+\item Xác suất \textbf{lọc}: chỉ sử dụng dữ liệu quan sát đến $t$.
+\end{itemize}
+\end{column}
+\begin{column}{.48\linewidth}
+\topic{Dự báo một bước}
+\small\begin{itemize}\setlength{\itemsep}{3pt}
+\item Trung bình điều kiện phụ thuộc $S_t,S_{t-1},S_{t-2}$.
+\item Dùng xác suất trạng thái tại thời điểm dự báo; không dùng \textbf{xác suất làm trơn} hồi cứu.
+\end{itemize}
+\end{column}
+\end{columns}
+\vspace{.11cm}
+\[\boldsymbol\pi_{t\mid t-1}=\boldsymbol\pi_{t-1\mid t-1}\mathbf P\]
+\src{Phần I, mục 4.5; Phần II, mục 7.5.3; MS--AR 2026, tr. 4}
+\end{frame}
+
+% SLIDE M5-05 -------------------------------------------------------------
+\begin{frame}{MS--AR(2): tham số ước lượng theo chế độ}
+\vspace{.04cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.57\linewidth}
+\topic{Trung bình và hệ số AR}
+\begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize]
+% axis mapping x=2.2 + 13.2*value, values between -0.06 to +0.13
+\draw[midgray!60,line width=.4pt] (2.00,.12)--(2.00,2.82);
+\foreach \v/\yy/\name in {0/2.4/$\mu$,1/1.52/AR(1),2/.64/AR(2)} {
+  \node[anchor=east] at (.68,\yy) {\name};
+}
+% regime-high and regime-low bars; use scale 10 per unit, origin x=2.00
+\fill[mainred] (2.00,2.54) rectangle (2.05244,2.77);
+\fill[midgray!75] (1.98953,2.27) rectangle (2.00,2.49);
+\fill[mainred] (2.00,1.66) rectangle (3.19936,1.89);
+\fill[midgray!75] (1.46381,1.39) rectangle (2.00,1.61);
+\fill[mainred] (1.54028,.78) rectangle (2.00,1.01);
+\fill[midgray!75] (1.87513,.51) rectangle (2.00,.73);
+\draw[midgray!28] (1.28,.2)--(1.28,2.82);
+\draw[midgray!28] (2.72,.2)--(2.72,2.82);
+\node[anchor=north] at (1.28,.2) {$-0{,}07$};
+\node[anchor=north] at (2.00,.2) {$0$};
+\node[anchor=north] at (2.72,.2) {$0{,}07$};
+\node[anchor=west,fill=mainred,minimum width=.18cm,minimum height=.12cm,inner sep=0pt] at (.10,3.22) {};
+\node[anchor=west] at (.42,3.22) {Cao};
+\node[anchor=west,fill=midgray!75,minimum width=.18cm,minimum height=.12cm,inner sep=0pt] at (1.18,3.22) {};
+\node[anchor=west] at (1.48,3.22) {Thấp};
+\end{tikzpicture}
+\end{column}
+\begin{column}{.40\linewidth}
+\topic{Độ lệch chuẩn theo chế độ}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\node[anchor=west,font=\scriptsize] at (0,2.66) {Biến động cao};
+\fill[mainred] (0,2.16) rectangle (2.52,2.49);
+\node[anchor=west,font=\scriptsize] at (0,1.63) {Biến động thấp};
+\fill[midgray!70] (0,1.14) rectangle (.421,1.47);
+\node[anchor=west,font=\scriptsize] at (0,.71) {$\sigma_H\!\approx 5{,}99\,\sigma_L$};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\vspace{.04cm}
+{\small\centering\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+\textbf{Chế độ} & $\mu$ & AR(1) & AR(2) & $\sigma$\\\midrule
+Cao & 0,005244 & 0,119936 & $-0{,}045972$ & 0,203432\\
+Thấp & $-0{,}001047$ & $-0{,}053619$ & $-0{,}012487$ & 0,033954\\\bottomrule
+\end{tabular}\par}
+\vspace{.12cm}
+\notegray{Tham số lợi suất và độ lệch chuẩn theo đơn vị điểm phần trăm; ước lượng đến 31/12/2025.}
+\src{Phần II, mục 7.5.4, Bảng P5.1; MS--AR 2026, tr. 5}
+\end{frame}
+
+% SLIDE M5-06 -------------------------------------------------------------
+\begin{frame}{MS--AR(2): khác biệt chủ yếu ở biến động}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.65\linewidth}
+\bigfig{p5_1_regime}{\linewidth}{4.35cm}\par\vspace{0.03cm}\centering{\scriptsize\color{midgray}Hình P5.1 -- Lợi suất log và xác suất trạng thái trên mẫu ước lượng}\par
+\end{column}
+\begin{column}{.33\linewidth}
+\topic{Đặc trưng chế độ}
+\small\begin{tabular}{@{}lrr@{}}\toprule
+ & Cao & Thấp\\\midrule
+$\mu$ & 0,0052 & $-0{,}0010$\\
+AR(1) & 0,1199 & $-0{,}0536$\\
+AR(2) & $-0{,}0460$ & $-0{,}0125$\\
+$\sigma$ & 0,2034 & 0,0340\\\bottomrule
+\end{tabular}\par
+\vspace{.14cm}
+\footnotesize Độ phân tán là khác biệt nổi bật: $\sigma_H/\sigma_L\approx5{,}99$.
+\end{column}
+\end{columns}
+\vspace{.06cm}
+\takeaway{Xác suất làm trơn mô tả các cụm lịch sử rõ hơn; chỉ xác suất đã lọc / dự báo trước mới dùng cho dự báo tại thời điểm thực tế.}
+\src{Phần II, mục 7.5.4, Hình P5.1; MS--AR 2026, tr. 6}
+\end{frame}
+
+% SLIDE M5-07 -------------------------------------------------------------
+\begin{frame}{Markov: kiểm tra ngoài mẫu năm 2026}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.62\linewidth}
+\bigfig{p5_3_markov_pi}{\linewidth}{4.43cm}\par\vspace{0.03cm}\centering{\scriptsize\color{midgray}Hình P5.3 -- Giá thực tế, dự báo một bước và khoảng 95\%}\par
+\end{column}
+\begin{column}{.36\linewidth}
+\topic{175 phiên test 2026}
+{\footnotesize\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lr@{}}\toprule
+\textbf{Chỉ số} & \textbf{Kết quả}\\\midrule
+MAE & 18,66\\
+RMSE & 29,93\\
+MAPE & 0,0713\%\\
+Đúng chiều & 48,57\%\\
+Bao phủ 95\% & 97,71\%\\
+Độ rộng TB & 135,68\\\bottomrule
+\end{tabular}\par}
+\vspace{.10cm}
+{\scriptsize\color{midgray}MAE, RMSE, độ rộng: VND/USD.}\par
+\end{column}
+\end{columns}
+\vspace{.04cm}
+\takeaway{Dự báo bám giá ở nhiều phiên nhưng dễ sai hơn trong pha biến động nhanh; tỷ lệ đúng chiều 48,57\% vẫn hạn chế.}
+\src{Phần II, mục 7.5.6, Bảng P5.4; MS--AR 2026, tr. 7}
+\end{frame}
+
+% SLIDE M5-08 -------------------------------------------------------------
+\begin{frame}{Markov Switching: kết luận và giới hạn}
+\vspace{.08cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.475\linewidth}
+\begin{block}{Kết quả đạt được}
+\small\begin{itemize}\setlength{\itemsep}{4pt}
+\item Phân biệt hai trạng thái chủ yếu theo độ biến động: $\sigma_H/\sigma_L\approx5{,}99$.
+\item Trên test 2026, MAE $\approx18{,}66$ và RMSE $\approx29{,}93$ VND/USD.
+\item Khoảng 95\% bao phủ $97{,}71\%$ quan sát.
+\end{itemize}
+\end{block}
+\end{column}
+\begin{column}{.475\linewidth}
+\begin{block}{Giới hạn cần nêu rõ}
+\small\begin{itemize}\setlength{\itemsep}{4pt}
+\item Đúng chiều chỉ $48{,}57\%$; không có ưu thế rõ về hướng.
+\item Phần dư ước lượng còn tự tương quan, không chuẩn và có ARCH.
+\item Chưa có kiểm định tổn thất \emph{ghép cặp} với Random Walk.
+\end{itemize}
+\end{block}
+\end{column}
+\end{columns}
+\vspace{.12cm}
+\takeaway{RMSE thấp hơn Random Walk về số học, nhưng chưa đủ bằng chứng thống kê để kết luận MS--AR(2) vượt mô hình đối chứng.}
+\src{Phần II, mục 7.5.5--7.5.6 và 8.4--8.7; MS--AR 2026, tr. 8}
+\end{frame}
+
+\section{VII. So sánh và kết luận}
+\partdivider{VII}{SO SÁNH VÀ KẾT LUẬN}{Đánh giá dự báo, giới hạn và hướng hoàn thiện}{}
+
+% SLIDE 32 -----------------------------------------------------------------
+\begin{frame}{So sánh dự báo điểm trên 175 phiên test}
+\vspace{0.14cm}
+{\small\renewcommand{\arraystretch}{1.33}
+\begin{tabularx}{\linewidth}{@{}X>{\raggedleft\arraybackslash}p{2.75cm}>{\raggedleft\arraybackslash}p{2.75cm}@{}}
+\rowcolor{softred}\textbf{Mô hình} & \textbf{MAE} & \textbf{RMSE}\\\midrule
+\textbf{Markov Switching AR(2)} & $18{,}6568$ & \textbf{$\approx29{,}93$}\\
+ARMA--GARCH Student--$t$ & $18{,}5630$ & $30{,}0521$\\
+\rowcolor{lightgray}\textbf{Random Walk (đối chứng)} & \textbf{$18{,}5629$} & $30{,}0534$\\
+Kalman Local Level & $18{,}5678$ & $30{,}0545$\\
+ARIMA(3,1,1) & $18{,}7363$ & $30{,}4392$\\
+SETAR(6;4) & $19{,}4838$ & $30{,}8688$\\\bottomrule
+\end{tabularx}}
+\vspace{0.22cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.48\linewidth}
+\begin{beamercolorbox}[wd=\linewidth,sep=.14cm,rounded=true]{block body}\small \textbf{MAE thấp nhất:} Random Walk.\end{beamercolorbox}
+\end{column}
+\begin{column}{.48\linewidth}
+\begin{beamercolorbox}[wd=\linewidth,sep=.14cm,rounded=true]{block body}\small \textbf{RMSE thấp nhất:} Markov (chỉ số mô tả).\end{beamercolorbox}
+\end{column}
+\end{columns}
+\src{Phần II, mục 8.4, Bảng 8.2; đơn vị sai số: VND/USD}
+\end{frame}
+
+% SLIDE 33 -----------------------------------------------------------------
+\begin{frame}{So sánh khoảng dự báo và bằng chứng thống kê}
+\vspace{0.02cm}
+{\scriptsize\renewcommand{\arraystretch}{1.17}
+\begin{tabularx}{\linewidth}{@{}X>{\raggedleft\arraybackslash}p{2.3cm}>{\raggedleft\arraybackslash}p{2.25cm}p{2.55cm}@{}}
+\rowcolor{softred}\textbf{Mô hình} & \textbf{Bao phủ 95\%} & \textbf{Độ rộng TB} & \textbf{Loss ghép cặp với RW}\\\midrule
+Random Walk & 94,86\% & 141,86 & Đối chứng\\
+ARIMA & 95,43\% & 139,21 & Đã có HAC / bootstrap\\
+ARMA--GARCH & 93,714\% & \textbf{94,53} & \textbf{Chưa có}\\
+Kalman & 94,86\% & 141,57 & Đã có HAC / bootstrap\\
+SETAR & 96,00\% & 148,61 & Đã có HAC / bootstrap\\
+Markov & 97,71\% & 135,68 & \textbf{Chưa có}\\\bottomrule
+\end{tabularx}}
+\vspace{0.07cm}
+\footnotesize\begin{itemize}\setlength{\itemsep}{1pt}
+\item Khoảng GARCH hẹp nhất nhưng có tỷ lệ bao phủ thấp hơn danh nghĩa.
+\item Kalman và RW có coverage và interval score gần nhau.
+\end{itemize}
+\takeaway{Độ rộng phải được đọc cùng coverage; kiểm định chưa đầy đủ không cho phép xếp hạng chắc chắn.}
+\src{Phần II, mục 8.5--8.7, Bảng 8.1 và 8.4}
+\end{frame}
+
+% SLIDE 34 -----------------------------------------------------------------
+\begin{frame}{Kết luận, giới hạn và hướng hoàn thiện}
+\vspace{0.25cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{.32\linewidth}
+\begin{block}{Kết quả đạt được}
+\small Năm mô hình mô tả các cấu trúc khác nhau: phụ thuộc tuyến tính, phương sai thay đổi, trạng thái ẩn và ngưỡng. Đã thống nhất tập test 175 phiên.
+\end{block}
+\end{column}
+\begin{column}{.32\linewidth}
+\begin{block}{Giới hạn bằng chứng}
+\small Chưa chứng minh được lợi thế ổn định so với RW. Dữ liệu có 569 dòng OHLC bất nhất; một số kiểm định và tính tái lập chưa đầy đủ.
+\end{block}
+\end{column}
+\begin{column}{.32\linewidth}
+\begin{block}{Hướng hoàn thiện}
+\small Xác minh nguồn Close; thống nhất mã/phiên bản và phép đánh giá; kiểm định ghép cặp còn thiếu; thử giai đoạn đánh giá mới.
+\end{block}
+\end{column}
+\end{columns}
+\vspace{0.42cm}
+\takeaway{Chưa có bằng chứng nhất quán rằng các mô hình phức tạp cải thiện ổn định dự báo một bước so với Random Walk.}
+\src{Phần II, mục 9.1--9.5}
+\end{frame}
+
+% Dedicated closing page matching the supplied reference.
+\presentationThankYou
+
+\end{document}
